@@ -1,0 +1,1727 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Audio;
+using System.IO;
+using UnityEngine.UI;
+using TMPro;
+
+[System.Serializable]
+
+public class Change_Music_Data
+{
+    public int Repeat_Count_Index;//반복 버튼 몇 번 눌렀는지
+    public int Cross_Count_Index;//교차 버튼 몇 번 눌렀는지
+
+    public int Music_Count_Index;//현재 몇 번째 음악이 재생중인지
+
+    public int Quest_Change_Music_Index;//스토리 진행 중 음악을 바꿔야 할 때 사용할 거
+    //음악을 바꾸자고 나올 때, 사용할 int
+}
+
+
+public class Change_Music : MonoBehaviour
+{
+
+    //public Typing typ;
+
+    public float Pause_Time = 0.0f;//일시 정지때 쓸거
+
+    public static Change_Music instance;
+
+    //음악 바꾸는 퀘스트 횟수
+    public int Quest_Change_Music;//몇 번째 음악 바꾸는 퀘스트인지
+    public int Default_Quest_Change_Music = 0;
+
+    public GameObject Music_Collection, Music_Col_Parent;
+
+    //현재 몇 번째 음악이 재생중인지
+    public int Default_Music_Count = 0;
+    public int Music_Count;//현재 몇 번째 음악인지
+
+
+    public GameObject[] Music_List;//좌측 음악 있는 거 -> 큰거(내용물은 따로)
+    public GameObject[] Music_List_Inside;//음악 재생, 재생 아닐 때 오브젝트
+
+    public GameObject[] PlayList_Music;//음악만-오브젝트
+    public AudioSource[] PlayList_Music_Audio;//음악만-AudioSource
+
+    
+
+    public GameObject[] Music_Picture;//음악별 앨범 그림
+
+    public int Default_Cross_Count = 0;
+    public int Cross_Count;//교차 아이콘을 몇 번 눌렀는지
+    public GameObject[] Cross;//교차 아이콘
+
+    public int Default_Repeat_Count = 0;
+    public int Repeat_Count;//반복 아이콘을 몇 번 눌렀는지
+    public GameObject[] Repeat;//반복 아이콘
+
+    public Move_Title[] move_title;
+
+    public GameObject Question;
+
+    private void Start()
+    {
+        instance = this;
+
+        Load_Repeat();//반복 아이콘
+        Load_Cross();//교차 아이콘
+        Load_Music_Count();//몇 번째 음악 재생중인지
+        Load_Quest_Change_Music();//몇 번째 음악 퀘스트인지
+    }
+
+    public void Go_Question()
+    {
+        //물음표 버튼
+        SFX_Manager.instance.SFX_Button();
+        Question.SetActive(true);
+
+    }
+
+    public void Back_Question()
+    {
+        SFX_Manager.instance.SFX_Button();
+        Question.SetActive(false);
+    }
+
+
+    public void Go_Back()
+    {
+        Winter_Music.instance.HeadPhone.SetActive(false);
+        SFX_Manager.instance.SFX_Button();
+
+        if (Quest_Change_Music == 1 && Typing.instance.Sentences_0 == 13)
+        {
+            //음악 바꾸라는 퀘스트가 실행되었다면
+            StartCoroutine(Show_Next_Sentence());
+            IEnumerator Show_Next_Sentence()
+            {
+                yield return new WaitForSeconds(0.25f);
+                Typing.instance.Sentences_0++;
+                Typing.instance.Arrow.SetActive(true);//화살표 활성
+                Typing.instance.btn.enabled = true;//버튼 활성화
+                Typing.instance.StartTyping();
+            }
+            
+        }
+    }
+
+    
+
+    private void Update()
+    {
+        //Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+ 
+        if (Repeat_Count == 0)
+        {
+            //현재 음악만 계속 반복하고
+            //음악을 순서 상관없이 무작위로 반복한다면
+            for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+            {
+                PlayList_Music_Audio[i].loop = true;//무한반복 활성화
+            }
+            //-> 무작위 반복 딱히 상관없음. 현재 음악만 계속 반복
+
+            if (PlayList_Music_Audio[Music_Count].time >= PlayList_Music_Audio[Music_Count].clip.length)
+            {
+                Debug.Log(PlayList_Music_Audio[Music_Count] + "음악 끝났어요 다시 반복해요");
+            }
+        }
+
+        if (Repeat_Count == 1 && Cross_Count == 1)
+        {
+            //현재 음악이 끝나면 다른 음악이 나오게 하고
+            //음악을 순서대로 재생한다면
+            for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+            {
+                PlayList_Music_Audio[i].loop = false;//무한반복 비활성화
+            }
+
+            if (PlayList_Music_Audio[Music_Count].time >= PlayList_Music_Audio[Music_Count].clip.length)
+            {
+                Debug.Log(PlayList_Music_Audio[Music_Count] + "음악 끝났어요 순서대로 진행");
+                Activate_InOrder_Object();//순서대로 재생할 음악
+            }
+        }
+
+        if (Repeat_Count == 1 && Cross_Count == 0)
+        {
+            //현재 음악이 끝나면 다른 음악이 나오게 하고
+            //음악을 순서 상관없이 무작위로 반복한다면
+            for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+            {
+                PlayList_Music_Audio[i].loop = false;//무한반복 비활성화
+            }
+
+            if(PlayList_Music_Audio[Music_Count].time >= PlayList_Music_Audio[Music_Count].clip.length)
+            {
+                Debug.Log(PlayList_Music_Audio[Music_Count]+"음악 끝났어요 무작위로 진행");
+                ActivateRandomObject();//무작위로 재생할 음악
+            }
+
+        }
+
+        //음악 저장 관련
+        if(Music_Count == 0)
+        {
+            Touch_Music_0();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 1)
+        {
+            Touch_Music_1();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 2)
+        {
+            Touch_Music_2();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 3)
+        {
+            Touch_Music_3();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 4)
+        {
+            Touch_Music_4();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 5)
+        {
+            Touch_Music_5();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 6)
+        {
+            Touch_Music_6();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 7)
+        {
+            Touch_Music_7();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 8)
+        {
+            Touch_Music_8();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 9)
+        {
+            Touch_Music_9();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 10)
+        {
+            Touch_Music_10();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 11)
+        {
+            Touch_Music_11();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+
+        else if (Music_Count == 12)
+        {
+            Touch_Music_12();
+            Music_Picture[Music_Count].SetActive(true);
+        }
+    }
+
+    
+
+    //무작위로 재생할 음악
+    void ActivateRandomObject()
+    {
+        List<int> validNumbers = new List<int>();
+
+        // 활성화 가능한 번호들을 확인하여 리스트에 추가
+        for (int i = 0; i < Music_List.Length; i++)
+        {
+            // 현재 번호와 비활성화된 오브젝트의 번호는 제외
+            if (i != Music_Count && Music_List[i].activeSelf)
+            {
+                validNumbers.Add(i); // 활성화된 인덱스를 추가
+            }
+        }
+
+        if (validNumbers.Count > 0)
+        {
+            // 유효한 번호들 중 무작위로 선택
+            int randomIndex = Random.Range(0, validNumbers.Count);
+            int selectedNumber = validNumbers[randomIndex];
+
+            // 선택된 오브젝트 활성화
+            Music_List[selectedNumber].SetActive(true);
+
+            // 활성화된 오브젝트의 번호 업데이트
+            Music_Count = selectedNumber;
+
+            // 음악 재생 관련
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[Music_Count].SetActive(true);
+            PlayList_Music_Audio[Music_Count].Play();
+
+            //Debug.Log("활성화된 오브젝트 번호: " + selectedNumber);
+        }
+        else
+        {
+            return;
+            //Debug.LogWarning("활성화할 수 있는 오브젝트가 없습니다.");
+        }
+    }
+
+    //순서대로 재생할 음악
+    void Activate_InOrder_Object()
+    {
+        List<int> validNumbers = new List<int>();
+
+        // 활성화 가능한 번호들을 확인하여 리스트에 추가
+        for (int i = 0; i < Music_List.Length; i++)
+        {
+            // 비활성화된 오브젝트의 번호는 제외
+            if (Music_List[i].activeSelf)//화성화 되어 있으면 true, 그렇지 않으면 false를 출력
+            {
+                validNumbers.Add(i); // 활성화된 인덱스를 추가
+            }
+        }
+
+        if (validNumbers.Count > 0)
+        {
+            /*if(validNumbers.Count <= validNumbers[validNumbers.Count - 1])
+            {// 리스트에 마지막으로 들어간 번호보다 작을 경우 수행할 작업
+                Music_Count++;//카운트 추가
+
+                // 음악 재생 관련
+                for (int i = 0; i < PlayList_Music.Length; i++)
+                {
+                    PlayList_Music[i].SetActive(false);
+                }
+
+                PlayList_Music[Music_Count].SetActive(true);
+                PlayList_Music_Audio[Music_Count].Play();
+
+                Debug.Log("재생되고 있는 오브젝트 번호: " + Music_Count);
+            }*/
+            if (Music_Count < (validNumbers.Count-1))
+            {// 리스트에 마지막으로 들어간 번호보다 작을경우
+                Music_Count++;//카운트 추가
+
+                // 음악 재생 관련
+                for (int i = 0; i < PlayList_Music.Length; i++)
+                {
+                    PlayList_Music[i].SetActive(false);
+                }
+
+                PlayList_Music[Music_Count].SetActive(true);
+                PlayList_Music_Audio[Music_Count].Play();
+
+                //Debug.Log("재생되고 있는 오브젝트 번호: " + Music_Count);
+            }
+
+            else
+            {
+                Music_Count = 0;
+                // 음악 재생 관련
+                for (int i = 0; i < PlayList_Music.Length; i++)
+                {
+                    PlayList_Music[i].SetActive(false);
+                }
+
+                PlayList_Music[Music_Count].SetActive(true);
+                PlayList_Music_Audio[Music_Count].Play();
+
+                //Debug.Log("처음부터 재생: " + Music_Count);
+            }
+
+        }
+        else
+        {
+            return;
+            //Debug.LogWarning("활성화할 수 있는 오브젝트가 없습니다.");
+        }
+    }
+
+    public void FixedUpdate()
+    {
+        //타이틀이 나와있는 경우 나오지 마
+        if (Winter_Music.instance.Title.activeSelf == true )
+        {
+            Music_Collection.SetActive(false);
+        }
+        //헤드셋 플레이리스트 활성
+        //타이틀 화면이 나와있지 않은 상태일 경우 + 현재 현실인 경우 + 어머니 눈동자가 보이지 않을 경우
+        //-> 오류뜸
+        if //(Title_Fade.instance.Title_Canvas.activeSelf == false || 
+            //(Title_Fade.instance.Title_Canvas.activeSelf == false && Dream_Manager.instance.dream_y_n == 0))
+            (Winter_Music.instance.Title.activeSelf == false && Dream_Manager.instance.dream_y_n == 0)
+        {
+            Music_Collection.SetActive(true);
+            PlayList_Music[Music_Count].SetActive(true);
+        }
+
+
+
+        //헤드셋 플레이리스트 비활성
+        //타이틀이 나와있는 상태인 경우 + 현재 현실이 아닌 경우 + 어머니 눈동자가 나왔을 경우
+        /*if (Winter_Music.instance.Title.activeSelf == false)
+            //|| Dream_Manager.instance.dream_y_n == 1)
+        {
+            Music_Collection.SetActive(false);
+            Winter_Music.instance.HeadPhone.SetActive(false);
+        }*/
+
+
+        if((Winter_Music.instance.Title.activeSelf == false && Dream_Manager.instance.dream_y_n == 1))
+        {
+            //Music_Collection.SetActive(false);
+            Music_Collection.SetActive(true);
+            for(int i = 0; i<PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+            //모든 노래 멈춰
+        }
+
+        if (Typing.instance.Sentences_0 >= 15 && Winter_Music.instance.Title.activeSelf == false)
+        {
+            //10번째 음악 활성화
+            Music_List[10].SetActive(true);
+        }
+
+        //반복
+        if (Repeat_Count == 0)
+        {
+            //무한반복인거 활성화(반복1 아이콘)
+            for (int i = 0; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(true);
+            }
+
+            //전체 반복인거 비활성화(반복 A아이콘)
+            for (int i = 1; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(false);
+            }
+        }
+
+        if (Repeat_Count == 1)
+        {
+            //무한반복인거 비활성화(반복1 아이콘)
+            for (int i = 0; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(false);
+            }
+
+            //전체 반복인거 활성화(반복 A아이콘)
+            for (int i = 1; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(true);
+            }
+        }
+
+
+        //교차
+        if (Cross_Count == 0)
+        {
+            //교차가능 아이콘들 모두 활성화(교차 불가 아이콘)
+            for (int i = 0; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(true);
+            }
+
+            //교차 아닌거 아이콘들 모두 비활성화(교차 가능 아이콘)
+            for (int i = 1; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(false);
+            }
+        }
+
+        if (Cross_Count == 1)
+        {
+            //교차인거 아이콘들 모두 비활성화(교차 불가 아이콘)
+            for (int i = 0; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(false);
+            }
+
+            //교차 아닌거 아이콘들 모두 활성화(교차 가능 아이콘)
+            for (int i = 1; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(true);
+            }
+        }
+    }
+
+    public void Delete_Music_Data()
+    {
+        //반복
+        string path0 = Application.persistentDataPath + "/Repeat.json";
+
+        if (File.Exists(path0))
+        {//파일이 존재하는 경우
+
+            File.Delete(path0);
+
+            //초기화 내용 적기
+            Repeat_Count = Default_Repeat_Count;
+
+            //Bg_0 = Default_Bg_0;
+            //Debug.Log("반복 데이터 파일 삭제");
+        }
+        else
+        {
+            return;
+            //Debug.Log("삭제할 반복 데이터 없음");
+        }
+
+        //교차
+        string path1 = Application.persistentDataPath + "/Cross.json";
+
+        if (File.Exists(path1))
+        {//파일이 존재하는 경우
+
+            File.Delete(path1);
+
+            //초기화 내용 적기
+            Cross_Count = Default_Cross_Count;
+
+            //Bg_0 = Default_Bg_0;
+            //Debug.Log("교차 데이터 파일 삭제");
+        }
+        else
+        {
+            return;
+            //Debug.Log("삭제할 교차 데이터 없음");
+        }
+
+        //몇 번째 음악
+        string path2 = Application.persistentDataPath + "/Music_Count.json";
+
+        if (File.Exists(path2))
+        {//파일이 존재하는 경우
+
+            File.Delete(path2);
+
+            //초기화 내용 적기
+            Music_Count = Default_Music_Count;
+
+            //Bg_0 = Default_Bg_0;
+            //Debug.Log("몇 번째 음악 데이터 파일 삭제");
+            Music_Picture[Music_Count].SetActive(true);
+        }
+        else
+        {
+            return;
+            //Debug.Log("삭제할 몇 번째 음악 데이터 없음");
+        }
+
+        //몇 번째 음악 퀘스트
+        string path3 = Application.persistentDataPath + "/Quest_Change_Music.json";
+
+        if (File.Exists(path3))
+        {//파일이 존재하는 경우
+
+            File.Delete(path3);
+
+            //초기화 내용 적기
+            Quest_Change_Music = Default_Quest_Change_Music;
+
+            //Bg_0 = Default_Bg_0;
+           // Debug.Log("음악 퀘스트 데이터 파일 삭제");
+
+            if (Quest_Change_Music == 0)
+            {//리셋했을 경우 10번째 음악부터는 다시 비활성화
+                for (int i = 10; i < Music_List.Length; i++)
+                {
+                    Music_List[10].SetActive(false);
+                }
+            }
+        }
+        else
+        {
+            return;
+            // Debug.Log("삭제할 음악 퀘스트 데이터 없음");
+        }
+    }
+
+    private void Save_About_Music()
+    {
+        //반복 아이콘 관련
+        Change_Music_Data data0 = new Change_Music_Data();
+        data0.Repeat_Count_Index = Repeat_Count;//현재의 Sentens_0값을 할당
+        string json0 = JsonUtility.ToJson(data0);//JsonUtility.ToJson을 사용해
+        //Change_Music_Data객체를 JSON문자열로 변환
+        File.WriteAllText(Application.persistentDataPath + "/Repeat.json", json0);
+        //WriteAllText를 사용해 변환된 JSON문자열을 Application.persistentDataPath경로에 있는
+        //Typing.json파일로 저장.
+
+        //교차 아이콘 관련
+        Change_Music_Data data1 = new Change_Music_Data();
+        data1.Cross_Count_Index = Cross_Count;
+        string json1 = JsonUtility.ToJson(data1);
+        File.WriteAllText(Application.persistentDataPath + "/Cross.json", json1);
+
+        //몇 번째 음악 재생중인지
+        Change_Music_Data data2 = new Change_Music_Data();
+        data2.Music_Count_Index = Music_Count;
+        string json2 = JsonUtility.ToJson(data2);
+        File.WriteAllText(Application.persistentDataPath + "/Music_Count.json", json2);
+
+        //몇 번째 음악 퀘스트인지(음악 바꾸라는 퀘스트)
+        Change_Music_Data data3 = new Change_Music_Data();
+        data3.Quest_Change_Music_Index = Quest_Change_Music;
+        string json3 = JsonUtility.ToJson(data3);
+        File.WriteAllText(Application.persistentDataPath + "/Quest_Change_Music.json", json3);
+    }
+
+    private void Load_Repeat()
+    {
+        string path = Application.persistentDataPath + "/Repeat.json";
+        //Typing.json라는 파일이 존재하는지 확인
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우 파일을 읽어옴
+            string json = File.ReadAllText(path);
+
+            //JsonUtility.FromJson을 통해 Change_Music_Data객체로 변환한다.
+            Change_Music_Data data = JsonUtility.FromJson<Change_Music_Data>(json);
+
+            //변환된 객체에서 Repeat_Count_Index값을 불러와서 현재 Repeat_Count에 저장
+            Repeat_Count = data.Repeat_Count_Index;
+
+            //Debug.Log("반복 몇 번 누름(0은 교차X 즉 순서대로):" + Repeat_Count);
+
+            //반복
+            if (Repeat_Count == 0)
+            {
+                //무한반복인거 활성화(반복1 아이콘)
+                for (int i = 0; i < Repeat.Length; i += 2)
+                {
+                    Repeat[i].SetActive(true);
+                }
+
+                //전체 반복인거 비활성화(반복 A아이콘)
+                for (int i = 1; i < Repeat.Length; i += 2)
+                {
+                    Repeat[i].SetActive(false);
+                }
+            }
+
+            if (Repeat_Count == 1)
+            {
+                //무한반복인거 비활성화(반복1 아이콘)
+                for (int i = 0; i < Repeat.Length; i += 2)
+                {
+                    Repeat[i].SetActive(false);
+                }
+
+                //전체 반복인거 활성화(반복 A아이콘)
+                for (int i = 1; i < Repeat.Length; i += 2)
+                {
+                    Repeat[i].SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            //파일이 존재하지 않는 경우
+           // Debug.Log("0번째: 같은거 무한반복합니다.");
+
+            Repeat_Count = Default_Repeat_Count;
+
+            //무한반복인거 활성화(반복1 아이콘)
+            for (int i = 0; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(true);
+            }
+
+            //전체 반복인거 비활성화(반복 A아이콘)
+            for (int i = 1; i < Repeat.Length; i += 2)
+            {
+                Repeat[i].SetActive(false);
+            }
+        }
+    }
+
+    public void Touch_Repeat_Count()
+    {
+        SFX_Manager.instance.SFX_Button();
+
+        if (Repeat_Count == 0)
+        {
+            Repeat_Count++;
+        }
+
+        else if(Repeat_Count == 1)
+        {
+            Repeat_Count = 0;
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+
+    private void Load_Cross()
+    {
+        string path = Application.persistentDataPath + "/Cross.json";
+        //Typing.json라는 파일이 존재하는지 확인
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우 파일을 읽어옴
+            string json = File.ReadAllText(path);
+
+            //JsonUtility.FromJson을 통해 Change_Music_Data객체로 변환한다.
+            Change_Music_Data data = JsonUtility.FromJson<Change_Music_Data>(json);
+
+            //변환된 객체에서 Cross_Count_Index값을 불러와서 현재 Cross_Count에 저장
+            Cross_Count = data.Cross_Count_Index;
+
+            //Debug.Log("교차 몇 번 누름(0은 교차X 즉 순서대로):" + Cross_Count);
+
+            if (Cross_Count == 0)
+            {
+                //교차가능 아이콘들 모두 활성화(교차 불가 아이콘)
+                for (int i = 0; i < Cross.Length; i += 2)
+                {
+                    Cross[i].SetActive(true);
+                }
+
+                //교차 아닌거 아이콘들 모두 비활성화(교차 가능 아이콘)
+                for (int i = 1; i < Cross.Length; i += 2)
+                {
+                    Cross[i].SetActive(false);
+                }
+            }
+
+            else if (Cross_Count == 1)
+            {
+                //교차인거 아이콘들 모두 비활성화(교차 불가 아이콘)
+                for (int i = 0; i < Cross.Length; i += 2)
+                {
+                    Cross[i].SetActive(false);
+                }
+
+                //교차 아닌거 아이콘들 모두 활성화(교차 가능 아이콘)
+                for (int i = 1; i < Cross.Length; i += 2)
+                {
+                    Cross[i].SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            //파일이 존재하지 않는 경우
+           // Debug.Log("0번째: 교차재생하지 않습니다.");
+
+            Cross_Count = Default_Cross_Count;
+
+            //교차가능 아이콘들 모두 활성화(교차 불가 아이콘)
+            for (int i = 0; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(true);
+            }
+
+            //교차 아닌거 아이콘들 모두 비활성화(교차 가능 아이콘)
+            for (int i = 1; i < Cross.Length; i += 2)
+            {
+                Cross[i].SetActive(false);
+            }
+        }
+    }
+
+    public void Touch_Cross_Count()
+    {
+        SFX_Manager.instance.SFX_Button();
+
+        if (Cross_Count == 0)
+        {
+            Cross_Count++;
+        }
+
+        else if (Cross_Count == 1)
+        {
+            Cross_Count = 0;
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Load_Music_Count()
+    {
+        string path = Application.persistentDataPath + "/Music_Count.json";
+        //Music_Count.json라는 파일이 존재하는지 확인
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우 파일을 읽어옴
+            string json = File.ReadAllText(path);
+
+            //JsonUtility.FromJson을 통해 Change_Music_Data객체로 변환한다.
+            Change_Music_Data data = JsonUtility.FromJson<Change_Music_Data>(json);
+
+            //변환된 객체에서 Music_Count_Index값을 불러와서 현재 Music_Count에 저장
+            Music_Count = data.Music_Count_Index;
+
+           // Debug.Log("현재 몇 번째 음악이 재생되고 있는지:" + Music_Count);
+
+        }
+        else
+        {
+            //파일이 존재하지 않는 경우
+            //Debug.Log("0번째 음악이 재생됩니다.");
+
+            Music_Count = Default_Music_Count;
+        }
+    }
+
+    private void Load_Quest_Change_Music()
+    {
+        string path = Application.persistentDataPath + "/Quest_Change_Music.json";
+        //Music_Count.json라는 파일이 존재하는지 확인
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우 파일을 읽어옴
+            string json = File.ReadAllText(path);
+
+            //JsonUtility.FromJson을 통해 Change_Music_Data객체로 변환한다.
+            Change_Music_Data data = JsonUtility.FromJson<Change_Music_Data>(json);
+
+            //변환된 객체에서 Music_Count_Index값을 불러와서 현재 Music_Count에 저장
+            Quest_Change_Music = data.Quest_Change_Music_Index;
+
+            //Debug.Log("음악 바꾸는 퀘스트가 몇 번째:" + Quest_Change_Music);
+
+        }
+        else
+        {
+            //파일이 존재하지 않는 경우
+           // Debug.Log("아직 음악 바꾸는 퀘스트 안 나옴.");
+
+            Quest_Change_Music = Default_Quest_Change_Music;
+        }
+    }
+
+    
+
+   
+
+    public void Touch_Music_0()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 0이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 0)
+        {
+            Quest_Change_Music = 1; 
+        }
+
+        Music_Count = 0;
+
+        if (Music_List_Inside[1].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[0].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[1].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[0].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+
+    }
+
+    public void Touch_Music_1()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 1이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 1)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 1;
+
+        if (Music_List_Inside[3].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[1].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[3].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[1].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_2()
+    {
+       
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 2이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 2)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 2;
+        //move_title[0].Set_Text();
+
+        if (Music_List_Inside[5].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[0].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[2].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[5].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[2].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+    
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_3()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 3이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 3)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 3;
+        
+
+        if (Music_List_Inside[7].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[1].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[3].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[7].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[3].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외) 
+    }
+
+    public void Touch_Music_4()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 4이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 4)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 4;
+       
+
+        if (Music_List_Inside[9].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[2].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[4].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[9].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[4].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_5()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 5이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 5)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 5;
+        
+
+        if (Music_List_Inside[11].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[3].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[5].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[11].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[5].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_6()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 6이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 6)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 6;
+
+        if (Music_List_Inside[13].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[4].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[6].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[13].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[6].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+    
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_7()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 7이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 7)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 7;
+
+        
+
+        if (Music_List_Inside[15].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[7].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[15].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[7].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+
+        }
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+
+    }
+
+    public void Touch_Music_8()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 8이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 8)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 8;
+
+        if (Music_List_Inside[17].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            
+
+            move_title[5].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[8].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[17].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[8].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    public void Touch_Music_9()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 9이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 9)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 9;
+
+        if (Music_List_Inside[19].activeSelf == true)
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[9].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[19].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[9].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    //10번째 음악
+    public void Touch_Music_10()
+    {
+
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 10이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 10)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 10;
+
+        if (Music_List_Inside[21].activeSelf == true)//홀수
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[6].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[10].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[21].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[10].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    //11번째
+    public void Touch_Music_11()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 11이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 11)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 11;
+
+        if (Music_List_Inside[23].activeSelf == true)//홀수
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+
+
+            move_title[7].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[11].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[23].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[11].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+  
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+    //12번째
+    public void Touch_Music_12()
+    {
+
+        //음악 바꾸기 퀘스트 관련
+        //만약에 13번째 문장이 나왔고 현재 음악이 12이 아닌 경우
+        if (Quest_Change_Music == 0 && Typing.instance.Sentences_0 == 13 && Music_Count != 12)
+        {
+            Quest_Change_Music = 1;
+        }
+
+        Music_Count = 12;
+
+        if (Music_List_Inside[25].activeSelf == true)//홀수
+        {
+            //이미 활성화되어 있다면 그대로
+            return;
+        }
+
+        else
+        {
+            move_title[8].Set_Text();
+
+            //음악 변경
+            for (int i = 0; i < PlayList_Music.Length; i++)
+            {
+                PlayList_Music[i].SetActive(false);
+            }
+
+            PlayList_Music[12].SetActive(true);
+
+            //음악 재생 오브젝트 변경
+            for (int i = 1; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Music_List_Inside.Length; i += 2)
+            {
+                Music_List_Inside[i].SetActive(true);
+            }
+
+            Music_List_Inside[25].SetActive(true);//홀수가 활성
+
+            //음악 앨범 변경
+            for (int i = 0; i < Music_Picture.Length; i++)
+            {
+                Music_Picture[i].SetActive(false);
+            }
+
+            Music_Picture[12].SetActive(true);
+
+            //음악 중간부터 재생되는 문제 해결
+            if (Typing.instance.Sentences_0 >= 30)
+            {
+                //기존에 이미 중단했던 곡을 다른 곡 선택했다가 다시 선택하면 처음부터 시작하도록
+                for (int i = 0; i < PlayList_Music_Audio.Length; i++)
+                {
+                    PlayList_Music_Audio[i].time = 0;
+                    PlayList_Music_Audio[Music_Count].Play();
+                }
+            }
+
+ 
+        }
+
+        Save_About_Music();//음악 관련된 거 저장(배경음, 효과음 제외)
+    }
+
+}
