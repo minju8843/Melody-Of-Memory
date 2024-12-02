@@ -1,0 +1,84 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class Load_Control : MonoBehaviour
+{
+    public Slider progressbar;
+
+    //로딩 창
+
+    private void Start()
+    {
+        if (SceneManager.GetActiveScene().name == "Loading_Scene")
+        {
+            Rhythm_Fade.instance.Fade.SetActive(false);
+
+        }
+
+        // 로딩 씬이 시작될 때, PlayerPrefs에서 다음 씬을 불러온다.
+        if (PlayerPrefs.HasKey("NextScene"))
+        {
+            string nextScene = PlayerPrefs.GetString("NextScene");
+            StartCoroutine(LoadSceneWithProgressBar(nextScene));
+        }
+        else
+        {
+            Debug.LogError("NextScene not found in PlayerPrefs.");
+        }
+    }
+
+
+
+    // 씬을 비동기적으로 로드하는 메서드
+    public IEnumerator LoadSceneWithProgressBar(string sceneName)
+    {
+        Rhythm_Fade.instance.Fade.SetActive(false);
+
+        // 로딩 화면에서 프로그레스 바 초기화
+        progressbar.value = 0f;
+
+        // 씬 비동기 로드 시작
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+        operation.allowSceneActivation = false;
+
+        while (!operation.isDone)
+        {
+            yield return null;
+
+            // 로딩 진행도 업데이트
+            if (progressbar.value < 0.9f)
+            {
+                progressbar.value = Mathf.MoveTowards(progressbar.value, 0.9f, Time.deltaTime);
+            }
+            else if (operation.progress >= 0.9f)
+            {
+                progressbar.value = Mathf.MoveTowards(progressbar.value, 1f, Time.deltaTime);
+            }
+
+            // 로딩 바가 끝나면 씬 전환 준비
+            if (progressbar.value >= 1f)
+            {
+                Debug.Log("스페이스 바 누르셈");
+            }
+
+            // 로딩 바가 1에 도달하면 씬 전환 시작
+            if (progressbar.value >= 1f && operation.progress >= 0.9f)
+            {
+                operation.allowSceneActivation = true;  // 씬 전환 허용
+                
+
+            }
+        }
+
+        // PlayerPrefs에서 씬 정보 삭제하여 로딩 씬 반복 방지
+        PlayerPrefs.DeleteKey("NextScene");
+    }
+
+    private void OnApplicationQuit()
+    {
+        // 앱 종료 시 PlayerPrefs에서 씬 이름을 삭제하여 로딩 씬 반복 방지
+        PlayerPrefs.DeleteKey("NextScene");
+    }
+}
