@@ -1,0 +1,557 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using System.IO;
+using TMPro;
+using System.Linq;//LINQ를 사용하기 위해 필요
+
+[System.Serializable]
+
+public class Shop_Data
+{
+    //슈퍼 퀘스트 저장
+    public int Shop_Quest_Index;
+}
+
+public class Shop_Inside : MonoBehaviour
+{
+    public int Shop_Quest = 0;//현재 몇 번째 상점 관련 퀘스트인지
+
+    public static Shop_Inside instance;
+
+    public Button[] buttons;//버튼 배열
+    public int[] buttonCounts;//int 배열 - 각각의 버튼에 대응되는 int로, 몇 번 버튼이 눌렸는지 카운트
+    public Image[] buttonImages;//UI Image 배열 - 각각의 버튼에 대응되는 이미지, 카운트에 따라 색이 바뀜
+    public Color EmptyColor = new Color32(0, 0, 0, 1);       //투명한 색(선택이 되지 않거나 카운트 짝수)
+    public Color BrownColor = new Color32(91, 66, 44, 255); //원래 색(선택이 되거나 카운트 홀수)
+
+    private Dictionary<int, (string message, int fruitIndex)> buttonActions = new Dictionary<int, (string, int)>();
+    
+    //buttonActions를 통해 메시지와 Fruit배열의 인덱스를 매핑
+    //튜플(string, int)를 사용하여 메시지와 활성화할 과일 인덱스를 함께 저장
+
+    void Start()
+    {
+        instance = this;
+        Load_Shop_Quest();//쇼핑 퀘스트 몇 번째인지 불러오기
+
+        LoadButtonActions();
+
+        // 모든 버튼에 클릭 리스너 추가
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            int index = i; // Closure 문제를 피하기 위한 로컬 변수
+            //매 반복마다 i값을 저장할 새로운 로컬 변수 선언하여 i를 안전하게 보관
+
+            buttons[i].onClick.AddListener(() => OnButtonClick(index));
+            //AddListener: buttons[i]에 클릭 리스너를 추가
+            //onClick.AddListener: 유니티에서 UI버튼의 클릭 이벤트 처리
+            //버튼이 클릭되면 등록됨 함수를 실해하게 한다
+
+            //() => OnButtonClick(index)
+            //-> 람다함수. 버튼이 클릭될 때 실행될 코드
+            //람다함수가 실행되면 OnButtonClick함수 호출, 이때 index값을 인자로 넘김
+
+            buttonImages[i].color = EmptyColor;
+
+            // Shop_Buy 버튼에 클릭 리스너 추가
+            //Shop_Buy버튼이 클릭되었을 때, Shop_Buy()메서도 호출
+            //buttons[i].onClick.AddListener(Shop_Buy);
+            //onClick은 버튼이 클릭될 때 발생한 이벤트를 의미
+            //AddListener(Shop_Buy) -> Shop_Buy라는 이름의 메서드를 onClick 이벤트에 추가하는 코드
+
+        }
+    }
+
+    void LoadButtonActions()
+    {//각 버튼 인덱스에 대한 작업을 미리 정의하여 buttonActions 딕셔너리에 추가
+        //필요하다면 여기서 계속 추가 가능
+
+        // 버튼 인덱스와 메시지, Fruit 인덱스를 매핑
+        
+        //(과일)석류, 용과, 커런트, 딸기, 라지베리, 사과, 체리, 모과, 복숭아
+        //-> 총 9개
+        buttonActions[0] = ("석류", 0);
+        buttonActions[1] = ("용과", 1);
+        buttonActions[2] = ("커런트", 2);
+        buttonActions[3] = ("딸기", 3);
+        buttonActions[4] = ("라즈베리", 4);
+        buttonActions[5] = ("사과", 5);
+        buttonActions[6] = ("체리", 6);
+        buttonActions[7] = ("모과", 7);
+        buttonActions[8] = ("복숭아", 8);
+
+        //(과일)감, 귤, 살구, 오렌지, 망고, 자몽, 레몬, 스타 애플, 바나나
+        //-> 총 9개
+        buttonActions[9] = ("감", 9);
+        buttonActions[10] = ("귤", 10);
+        buttonActions[11] = ("살구", 11);
+        buttonActions[12] = ("오렌지", 12);
+        buttonActions[13] = ("망고", 13);
+        buttonActions[14] = ("자몽", 14);
+        buttonActions[15] = ("레몬", 15);
+        buttonActions[16] = ("스타 애플", 16);
+        buttonActions[17] = ("바나나", 17);
+
+        //(과일)파인애플, 파파야, 커스터드 애플, 포도, 배, 키위, 올리브, 멜론, 아보카도
+        //-> 총 9개
+        buttonActions[18] = ("파인애플", 18);
+        buttonActions[19] = ("파파야", 19);
+        buttonActions[20] = ("커스터드 애플", 20);
+        buttonActions[21] = ("포도", 21);
+        buttonActions[22] = ("배", 22);
+        buttonActions[23] = ("키위", 23);
+        buttonActions[24] = ("올리브", 24);
+        buttonActions[25] = ("멜론", 25);
+        buttonActions[26] = ("아보카도", 26);
+
+        //(과일)라임, 수박, 무화가, 블랙베리
+        //      블루베리, 코코넛, 자두, 패션 푸르트
+        //-> 총 8개
+        buttonActions[27] = ("라임", 27);
+        buttonActions[28] = ("수박", 28);
+        buttonActions[29] = ("무화과", 29);
+        buttonActions[30] = ("블랙베리", 30);
+        buttonActions[31] = ("블루베리", 31);
+        buttonActions[32] = ("코코넛", 32);
+        buttonActions[33] = ("자두", 33);
+        buttonActions[34] = ("패션 푸르트", 34);
+
+        //(채소)고추, 무, 방울토마토, 사탕무
+        //      붉은 양배추, 마늘, 순무, 살구버섯, 호박
+        //-> 총 9개
+        buttonActions[35] = ("고추", 35);
+        buttonActions[36] = ("무", 36);
+        buttonActions[37] = ("방울토마토", 37);
+        buttonActions[38] = ("시탕무", 38);
+        buttonActions[39] = ("붉은 양배추", 39);
+        buttonActions[40] = ("마늘", 40);
+        buttonActions[41] = ("순무", 41);
+        buttonActions[42] = ("살구 버섯", 42);
+        buttonActions[43] = ("호박", 43);
+
+        //(채소)당근, 양송이버섯, 포르치니, 느타리버섯
+        //      포토벨로 버섯, 표고버섯, 감자, 샬롯, 양파
+        //-> 총 9개
+        buttonActions[44] = ("당근", 44);
+        buttonActions[45] = ("양송이 버섯", 45);
+        buttonActions[46] = ("포르치니 버섯", 46);
+        buttonActions[47] = ("느타리 버섯", 47);
+        buttonActions[48] = ("포토벨로 버섯", 48);
+        buttonActions[49] = ("포고 버섯", 49);
+        buttonActions[50] = ("감자", 50);
+        buttonActions[51] = ("샬롯", 51);
+        buttonActions[52] = ("양파", 52);
+
+        //(채소)고구마, 크레미니 버섯, 가지, 곰보버섯
+        //      트러플, 옥수수, 꽃양배추, 청경채, 콜라비
+        //-> 총 9개
+        buttonActions[53] = ("고구마", 53);
+        buttonActions[54] = ("크레미니 버섯", 54);
+        buttonActions[55] = ("가지", 55);
+        buttonActions[56] = ("곰보 버섯", 56);
+        buttonActions[57] = ("트러플", 57);
+        buttonActions[58] = ("옥수수", 58);
+        buttonActions[59] = ("꽃양배추", 59);
+        buttonActions[60] = ("청경채", 60);
+        buttonActions[61] = ("콜라비", 61);
+
+        //(채소)릭, 파, 루꼴라, 꽃상추
+        //      양배추, 상추, 방울다다기양배추, 브로콜리, 콜라드
+        //-> 총 9개
+        buttonActions[62] = ("릭", 62);
+        buttonActions[63] = ("파", 63);
+        buttonActions[64] = ("루꼴라", 64);
+        buttonActions[65] = ("꽃상추", 65);
+        buttonActions[66] = ("양배추", 66);
+        buttonActions[67] = ("상추", 67);
+        buttonActions[68] = ("방울다다기양배추", 68);
+        buttonActions[69] = ("브로콜리", 69);
+        buttonActions[70] = ("콜라드", 70);
+
+        //(채소)샐러리, 시금치, 근대, 부추
+        //      아티초크, 케일, 아스파라거스,주키니, 오이
+        //-> 총 9개
+        buttonActions[71] = ("샐러리", 71);
+        buttonActions[72] = ("시금치", 72);
+        buttonActions[73] = ("근대", 73);
+        buttonActions[74] = ("부추", 74);
+        buttonActions[75] = ("아티초크", 75);
+        buttonActions[76] = ("케일", 76);
+        buttonActions[77] = ("아스파라거스", 77);
+        buttonActions[78] = ("주키니", 78);
+        buttonActions[79] = ("오이", 79);
+
+        //(해산물)새우, 가자미, 갑오징어, 가리비
+        //        꽃게, 랍스터, 홍합, 오징어, 성게
+        //-> 총 9개
+        buttonActions[80] = ("새우", 80);
+        buttonActions[81] = ("가자미", 81);
+        buttonActions[82] = ("갑오징어", 82);
+        buttonActions[83] = ("가리비", 83);
+        buttonActions[84] = ("꽃게", 84);
+        buttonActions[85] = ("랍스터", 85);
+        buttonActions[86] = ("홍합", 86);
+        buttonActions[87] = ("오징어", 87);
+        buttonActions[88] = ("성게", 88);
+        
+        //(해산물)가오리, 캐비어, 장어
+        //        정어리, 참치, 연어
+        //-> 총 6개
+        buttonActions[89] = ("가오리", 89);
+        buttonActions[90] = ("캐비어", 90);
+        buttonActions[91] = ("장어", 91);
+        buttonActions[92] = ("정어리", 92);
+        buttonActions[93] = ("참치", 93);
+        buttonActions[94] = ("연어", 94);
+
+        //(육류)돼지고기 햄, 등심, 립, 모르타델라, 살라미
+        //        소 간, 소시지, 스테이크, 미트로프
+        //-> 총 9개
+        buttonActions[95] = ("돼지고기 햄", 95);
+        buttonActions[96] = ("등심", 96);
+        buttonActions[97] = ("립", 97);
+        buttonActions[98] = ("모르타델라", 98);
+        buttonActions[99] = ("살라미", 99);
+        buttonActions[100] = ("소간", 100);
+        buttonActions[101] = ("소시지", 101);
+        buttonActions[102] = ("스테이크", 102);
+        buttonActions[103] = ("미트로프", 103);
+
+        //(육류)선지 소시지, 꼬치, 케밥, 갈비살, 베이컨
+        //       삽겹살, 닭날개, 치킨, 패티
+        //-> 총 9개
+        buttonActions[104] = ("선지 소시지", 104);
+        buttonActions[105] = ("꼬치", 105);
+        buttonActions[106] = ("케밥", 106);
+        buttonActions[107] = ("갈비살", 107);
+        buttonActions[108] = ("베이컨", 108);
+        buttonActions[109] = ("삼겹살", 109);
+        buttonActions[110] = ("닭날개", 110);
+        buttonActions[111] = ("생닭", 111);
+        buttonActions[112] = ("패티", 122);
+
+        //(곡물)검정콩, 완두콩, 팥, 오트밀, 병아리콩
+        //       녹색 렌틸콩, 쌀, 호밀, 밀
+        //-> 총 9개
+        buttonActions[113] = ("검정콩", 113);
+        buttonActions[114] = ("완두콩", 114);
+        buttonActions[115] = ("팥", 115);
+        buttonActions[116] = ("오트밀", 116);
+        buttonActions[117] = ("병아리콩", 117);
+        buttonActions[118] = ("녹색 렌틸콩", 118);
+        buttonActions[119] = ("쌀", 119);
+        buttonActions[120] = ("호밀", 120);
+        buttonActions[121] = ("밀", 121);
+
+        //(견과류)건포도, 대추, 도토리, 마카다미아, 밤
+        //        브라질 호두, 아몬드, 피칸, 페이즐넛
+        //-> 총 9개
+        buttonActions[122] = ("건포도", 122);
+        buttonActions[123] = ("대추", 123);
+        buttonActions[124] = ("도토리", 124);
+        buttonActions[125] = ("마카다미아", 125);
+        buttonActions[126] = ("밤", 126);
+        buttonActions[127] = ("브라질 호두", 127);
+        buttonActions[128] = ("아몬드", 128);
+        buttonActions[129] = ("피칸", 129);
+        buttonActions[130] = ("헤이즐넛", 130);
+
+        //(견과류)참깨, 잣, 땅콩, 호박씨, 피스타치오
+        //        캐슈넛, 치아시드, 해바라기씨, 호두
+        //-> 총 9개
+        buttonActions[131] = ("참깨", 131);
+        buttonActions[132] = ("잣", 132);
+        buttonActions[133] = ("땅콩", 133);
+        buttonActions[134] = ("호박씨", 134);
+        buttonActions[135] = ("피스타치오", 135);
+        buttonActions[136] = ("캐슈넛", 136);
+        buttonActions[137] = ("치아시드", 137);
+        buttonActions[138] = ("해바라기씨", 138);
+        buttonActions[139] = ("호두", 139);
+
+        //(유제품)로크포르 치즈, 파르메산 치즈, 브리 치즈, 스위스 치즈, 하우다 치즈
+        //        체다 치즈, 페타 치즈, 마스카르포네 치즈, 코티지 치즈
+        //-> 총 9개
+        buttonActions[140] = ("로크포르 치즈", 140);
+        buttonActions[141] = ("파르메산 치즈", 141);
+        buttonActions[142] = ("브리 치즈", 142);
+        buttonActions[143] = ("스위스 치즈", 143);
+        buttonActions[144] = ("하우다 치즈", 144);
+        buttonActions[145] = ("체다 치즈", 145);
+        buttonActions[146] = ("페타 치즈", 146);
+        buttonActions[147] = ("마스카르포네 치즈", 147);
+        buttonActions[148] = ("코티지 치즈", 148);
+
+        //(유제품)생치즈, 버터, 사워크림, 휘핑크림, 아이스크림, 우유
+        //-> 총 6개
+        buttonActions[149] = ("생치즈", 149);
+        buttonActions[150] = ("버터", 150);
+        buttonActions[151] = ("사워크림", 151);
+        buttonActions[152] = ("휘핑크림", 152);
+        buttonActions[153] = ("아이스크림", 153);
+        buttonActions[154] = ("우유", 154);
+
+        //(조미료)딜, 로즈마리, 백리향, 향나무, 사철쑥,
+        //        물냉이, 고수, 파슬리, 민트
+        //-> 총 9개
+        buttonActions[155] = ("딜", 155);
+        buttonActions[156] = ("로즈마리", 156);
+        buttonActions[157] = ("백리향", 157);
+        buttonActions[158] = ("향나무", 158);
+        buttonActions[159] = ("사철쑥", 159);
+        buttonActions[160] = ("물냉이", 160);
+        buttonActions[161] = ("고수", 161);
+        buttonActions[162] = ("파슬리", 162);
+        buttonActions[163] = ("핀트", 163);
+
+        //(조미료)겨자, 강황, 계피, 바닐라, 생강
+        //        육두구, 정향, 캐러웨이, 팔각
+        //-> 총 9개
+        buttonActions[164] = ("겨자", 164);
+        buttonActions[165] = ("강황", 165);
+        buttonActions[166] = ("계피", 166);
+        buttonActions[167] = ("바닐라", 167);
+        buttonActions[168] = ("생강", 168);
+        buttonActions[169] = ("육두구", 169);
+        buttonActions[170] = ("정향", 170);
+        buttonActions[171] = ("캐러웨이", 171);
+        buttonActions[172] = ("팔각", 172);
+
+        //(조미료)샤프란, 와사비, 카르다몸, 오레가노, 바실
+        //        월계수잎, 스테비아, 펜넬, 황색 피망
+        //-> 총 9개
+        buttonActions[173] = ("샤프란", 173);
+        buttonActions[174] = ("와사비", 174);
+        buttonActions[175] = ("카르다몸", 175);
+        buttonActions[176] = ("오레가노", 176);
+        buttonActions[177] = ("바실", 177);
+        buttonActions[178] = ("월계수잎", 178);
+        buttonActions[179] = ("스테비아", 179);
+        buttonActions[180] = ("펜넬", 180);
+        buttonActions[181] = ("황색 피망", 181);
+
+        //(기타)꿀, 이스트, 밀가루, 베이킹소다, 잼
+        //       달걀, 시럽, 커피, 후추
+        //-> 총 9개
+        buttonActions[182] = ("꿀", 182);
+        buttonActions[183] = ("이스트", 183);
+        buttonActions[184] = ("밀가루", 184);
+        buttonActions[185] = ("베이킹소다", 185);
+        buttonActions[186] = ("잼", 186);
+        buttonActions[187] = ("달걀", 187);
+        buttonActions[188] = ("시럽", 188);
+        buttonActions[189] = ("커피", 189);
+        buttonActions[190] = ("후추", 190);
+
+        //(기타)차, 소금, 설탕, 해바라기씨유, 식초
+        //      와인, 초콜렛, 머스타드, 케첩
+        //-> 총 9개
+        buttonActions[191] = ("차", 191);
+        buttonActions[192] = ("소금", 192);
+        buttonActions[193] = ("설탕", 193);
+        buttonActions[194] = ("해바라기씨유", 194);
+        buttonActions[195] = ("식초", 195);
+        buttonActions[196] = ("와인", 196);
+        buttonActions[197] = ("초콜릿", 197);
+        buttonActions[198] = ("머스타드", 198);
+        buttonActions[199] = ("케첩", 199);
+
+    }
+
+    // 버튼 클릭 시 호출되는 함수
+    public void OnButtonClick(int index)
+    {
+        SFX_Manager.instance.SFX_Button();
+
+        buttonCounts[index]++;  // 해당 버튼의 int 값 1 증가
+
+        // 클릭 횟수가 홀수인지 짝수인지 확인하여 색상 변경
+        if (buttonCounts[index] % 2 == 1)
+        {
+            buttonImages[index].color = BrownColor;  // 홀수일 때 갈색(선택됨)
+        }
+        else
+        {
+            buttonImages[index].color = EmptyColor;  // 짝수일 때 투명
+        }
+
+        // 기본 디버그 메시지 출력
+        Debug.Log($"Button {index} clicked. Total Clicks: {buttonCounts[index]}");
+
+        // 현재 홀수 클릭된 버튼들 출력
+        LogOddClickedButtons();
+    }
+
+    // 클릭 횟수가 홀수인 버튼들 출력
+    void LogOddClickedButtons()
+    {
+        string oddButtons = "Buttons with odd clicks: ";
+
+        // 모든 버튼을 순회하며 클릭 횟수가 홀수인 버튼을 확인
+        for (int i = 0; i < buttonCounts.Length; i++)
+        {
+            if (buttonCounts[i] % 2 == 1)
+            {
+                oddButtons += $"{i} (Count: {buttonCounts[i]}), ";
+
+                
+            }
+        }
+
+        // 콘솔에 홀수 클릭된 버튼들 출력
+        Debug.Log(oddButtons);
+    }
+
+    //리셋 버튼
+    public void Shop_Reset()
+    {
+        SFX_Manager.instance.SFX_Button();
+        //리셋 버튼
+
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            buttonCounts[i] = 0;
+            buttonImages[i].color = EmptyColor;
+        }
+
+        Debug.Log("모든 버튼 클릭 횟수 0으로 리셋 및 투명하게.");
+    }
+
+    public void Shop_Buy()
+    {
+        SFX_Manager.instance.SFX_Button();
+
+
+        //홀수 클릭된 버튼이 있는지
+        for (int i = 0; i < buttonCounts.Length; i++)
+        {
+            if (buttonCounts[i] % 2 == 1 && buttonActions.ContainsKey(i))
+            {//클릭 횟수가 홀수인 버튼이 딕셔너리에 있으면 메시지 출력
+
+                var action = buttonActions[i];
+                Debug.Log(action.message+"나와"); // 메시지 출력
+
+                //bag.ActivateFruit(action.fruitIndex); // 해당 Fruit 인덱스 활성화
+
+                //LoadButtonActions();
+
+                if (buttonActions.ContainsKey(i))
+                {
+                    var (message, fruitIndex) = buttonActions[i]; // message를 가져옵니다
+                    Bag_Item.instance.AddItem(message, 1); // 아이템 추가 (message를 사용)
+                }
+
+
+                if (Shop_Quest == 1)
+                //현재 프롤로그 쇼핑 관련 퀘스트라면 Shop_Quest를 2로 만들고 다음 텍스트가 나오게 하기
+                {
+                    Shop_Quest = 2; //쇼핑 퀘스트가 2라면 쇼핑창 화면이 나오지 않게 하기
+                                    //22번째 Sentences_0실행되도록
+
+                    Typing.instance.Sentences_0++;
+
+
+                    for (int j = 0; j < Typing.instance.Bg.Length; j++)
+                    {
+                        Typing.instance.Bg[j].SetActive(false);
+                    }
+                    Typing.instance.Bg[4].SetActive(true);//슈퍼 선명한거
+
+
+
+
+                    StartCoroutine(Show_Next_Sentence());
+                    IEnumerator Show_Next_Sentence()
+                    {
+                        yield return new WaitForSeconds(0.2f);//0.25였음
+                                                              //말풍선 보이게
+                        Typing.instance.Dia.SetActive(true);
+                        Typing.instance.Inside_Dia.SetActive(true);
+                        Typing.instance.Arrow.SetActive(true);//화살표 활성
+                        Typing.instance.btn.enabled = true;//버튼 활성화
+                        Typing.instance.StartTyping();
+
+                        for (int j = 0; j < Typing.instance.Name.Length; j++)
+                        {
+                            Typing.instance.Name[j].SetActive(false);
+                        }
+                        Typing.instance.Name[0].SetActive(true);//주인공
+                    }
+
+                }
+            }
+
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        Save_Shop_Quest();//쇼핑 퀘스트 몇 번째인지 저장
+
+        if(Shop_Quest == 2)
+        {
+            // 2 라면 쇼핑 창이 나오지 않도록
+            Shop_Script.instance.Shop_Panel.SetActive(false);
+        }
+    }
+
+    //쇼핑 퀘스트 관련
+    private void Save_Shop_Quest()
+    {
+        Shop_Data data = new Shop_Data();
+        data.Shop_Quest_Index = Shop_Quest;
+        string json = JsonUtility.ToJson(data);
+        File.WriteAllText(Application.persistentDataPath + "/Shop_Quest.json", json);
+    }
+
+    private void Load_Shop_Quest()
+    {
+        string path = Application.persistentDataPath + "/Shop_Quest.json";
+
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+
+            Shop_Data data = JsonUtility.FromJson<Shop_Data>(json);
+            Shop_Quest = data.Shop_Quest_Index;
+        }
+
+        else
+        {
+            //파일이 존재하지 않으면
+            Shop_Quest = 0;
+        }
+    }
+
+    public void Delete_Shop_Quest()//리셋
+    {
+        string path = Application.persistentDataPath + "/Shop_Quest.json";
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우
+            File.Delete(path);
+
+            //초기화할 내용
+            Shop_Quest = 0;
+
+        }
+        else
+        {
+            Debug.Log("삭제할 맵 데이터 없음");
+        }
+
+        //쇼핑 첫 번째 페이지 보이도록 리셋
+        Shop_Script.instance.Menu_Count = 0;//카운트가 0이면 0번째 메뉴판이 나오도록
+        for (int i = 1; i < Shop_Script.instance.Menu.Length; i++)
+        {
+            Shop_Script.instance.Menu[i].SetActive(false);
+        }
+
+        Shop_Script.instance.Menu[0].SetActive(true);
+        Shop_Script.instance.Menu_Count_Text.text = "1/23";//왼쪽 아래 텍스트 이렇게 바꾸기
+
+    }
+}
