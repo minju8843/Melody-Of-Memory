@@ -1,0 +1,126 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class Hint : MonoBehaviour
+{
+    public GameObject Go_Hint;//힌트를 보시겠습니까? 창
+    public GameObject[] Hints;//힌트들 모음
+
+    public Typing typ;
+
+    public static Hint instance;
+
+    private void Start()
+    {
+        //처음엔 비활성
+        Go_Hint.SetActive(false);
+
+        for (int i = 0; i < Hints.Length; i++)
+        {
+            Hints[i].SetActive(false);
+        }
+
+        instance = this;
+    }
+
+    public void Show_Hint_No()
+    {
+        SFX_Manager.instance.SFX_Button();
+        //힌트를 보시겠습니까? - 아니오
+        Go_Hint.SetActive(false);
+    }
+
+    public void Show_Hint_Yes()
+    {
+        SFX_Manager.instance.SFX_Button();
+        //힌트를 보시겠습니까? - 예
+        Go_Hint.SetActive(false);
+
+        Show_Hint();//힌트 보여주기
+    }
+
+    //힌트 내용물에서 엑스
+    public void Hint_X_btn()
+    {
+        SFX_Manager.instance.SFX_Button();
+
+        for (int i =0; i<Hints.Length; i++)
+        {
+            Hints[i].SetActive(false);
+        }
+    }
+
+    //힌트 내용물 관련
+    public void Show_Hint()
+    {
+       /* if(typ.Sentences_0 < 9  ||
+            (typ.Sentences_0 >= 10 && typ.Sentences_0 <= 12)
+            || (typ.Sentences_0 >= 14 && typ.Sentences_0 <= 18)
+            || typ.Sentences_0 == 20)
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+
+            Hints[0].SetActive(true);//이야기를 진행하세요
+        }*/
+
+        if (typ.Sentences_0 == 9 || typ.Sentences_0 == 38 || typ.Sentences_0 == 43)
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+            Hints[1].SetActive(true);//선택지를 선택하세요
+        }
+
+        else if (typ.Sentences_0 == 13)
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+            Hints[2].SetActive(true);//헤드셋 음악 바꾸세요
+        }
+
+        else if (typ.Sentences_0 == 19)
+        {
+            for(int i = 0; i< Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+            Hints[3].SetActive(true);//지도에서 슈퍼 이동하세요
+        }
+
+        else if (typ.Sentences_0 == 21)
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+            Hints[4].SetActive(true);//슈퍼에서 원하는 상품을 구매해 주세요.
+        }
+
+        else if (typ.Sentences_0 == 23)
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+            Hints[5].SetActive(true);//지도에서 집으로 이동하세요.
+        }
+
+        else
+        {
+            for (int i = 0; i < Hints.Length; i++)
+            {
+                Hints[i].SetActive(false);
+            }
+
+            Hints[0].SetActive(true);//이야기를 진행하세요
+        }
+    }
+}
