@@ -1,0 +1,105 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using System.IO;
+using TMPro;
+
+public class Typing_Fade : MonoBehaviour
+{
+    public static Typing_Fade instance;
+    public Image Fade_Image;
+
+    private void Start()
+    {
+        instance = this;
+    }
+
+    public void Sentences_0_34()
+    {
+        //Dream_Manager.instance.dream_y_n = 1;//현재 꿈입니당
+        StartCoroutine(SetActive_False());
+
+        IEnumerator SetActive_False()
+        {
+            yield return new WaitForSeconds(1.35f);
+            Typing.instance.Dia.SetActive(true);
+            Typing.instance.Inside_Dia.SetActive(true);
+
+            Typing.instance.Arrow.SetActive(true);//화살표 활성
+            Typing.instance.btn.enabled = true;//버튼 활성화
+            Typing.instance.StartTyping();
+        }
+
+          
+
+    }
+
+     public void Fade_Sentences_0_34()
+    {
+        //Typing.instance.Sentences_0++;
+        //Dream_Manager.instance.dream_y_n = 0;//현재 현실입니당
+        //페이드 인 아웃
+        Title_Fade.instance.Fade_Canvas.SetActive(true);
+        
+        Title_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
+
+        //여기서 화면 바꾸기
+        StartCoroutine(Go_Game());
+        IEnumerator Go_Game()
+        {
+            yield return new WaitForSeconds(2.25f);
+
+
+            Title_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
+            Typing.instance.Sentences_0++;
+
+            //Dream_Manager.instance.dream_y_n = 1;//현재 꿈입니당
+
+            //Typing.instance.Dia.SetActive(false);
+            //Typing.instance.Inside_Dia.SetActive(false);
+
+            //여기서 배경 바꾸기
+            for (int i = 0; i < Typing.instance.Bg.Length; i++)
+            {
+                Typing.instance.Bg[i].SetActive(false);
+            }
+            Typing.instance.Bg[6].SetActive(false);//집 내부
+            Typing.instance.Bg[7].SetActive(false);//어머니의 시선
+            Typing.instance.Bg[8].SetActive(true);//회색 거리로 
+
+
+            //슈퍼로 이동하라는 퀘스트가 실행되었다면
+            StartCoroutine(Show_Next_Sentence());
+            IEnumerator Show_Next_Sentence()
+            {
+                yield return new WaitForSeconds(2.0f);//0.25였음
+                                                      // Typing.instance.Sentences_0++;
+                for (int i = 0; i < Typing.instance.Name.Length; i++)
+                {
+                    Typing.instance.Name[i].SetActive(false);
+                }
+                Typing.instance.Name[0].SetActive(true);//주인공
+
+                Typing.instance.Dia.SetActive(true);
+                Typing.instance.Inside_Dia.SetActive(true);
+
+                Typing.instance.btn.enabled = false;//버튼 비활성화 10/29
+                Typing.instance.Arrow.SetActive(true);//화살표 활성
+                //Typing.instance.btn.enabled = true;//버튼 활성화
+                Typing.instance.StartTyping();
+            }
+
+            StartCoroutine(SetActive_False());
+        }
+
+        IEnumerator SetActive_False()
+        {
+            yield return new WaitForSeconds(1.35f);
+            Title_Fade.instance.Fade_Canvas.SetActive(false);
+            Typing.instance.btn.enabled = true;//버튼 활성화
+        }
+    }
+
+
+}
