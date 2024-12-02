@@ -1,0 +1,106 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+
+public class Item_Hint : MonoBehaviour
+{
+    public Button[] Item_Button;//아이템 버튼 모여있는 거
+
+    public GameObject Hint_Panel;//힌트를 보시겠습니까 판넬 
+    public Button Yes_Btn;//예 버튼
+    public Button No_Btn;//아니오 버튼
+
+    public GameObject Show_Panel;//뭘 주면 좋아하는지 알려주는 판넬 
+    public TextMeshProUGUI Name_Text;//아이템 이름 나올 곳
+
+    public string[] Item_Name;//아이템 이름
+
+    public int Select_Index;//현재 몇 번째 아이템이 선택되었는지
+
+    public GameObject[] Lock_Image;//흰색 잠금 이미지
+    public GameObject[] Item_Image;//아이템 이미지
+
+    public static Item_Hint instance;
+
+    public void Reset_Person_Like()
+    {
+        //아이템 이미지 비활성
+        /*for (int i = 0; i < Item_Image.Length; i++)
+        {
+            Item_Image[i].SetActive(false);
+        }
+
+        //자물쇠 이미지 활성
+        for (int i = 0; i < Lock_Image.Length; i++)
+        {
+            Lock_Image[i].SetActive(true);
+        }
+
+        //버튼 비활성
+        for (int i = 0; i < Item_Button.Length; i++)
+        {
+            Item_Button[i].enabled = false;
+        }
+        */
+    }
+
+    private void Start()
+    {
+        instance = this;
+
+        Hint_Panel.SetActive(false);//처음에 힌트 보시겠습니까 판넬 비활성
+
+        //모든 버튼에 클릭 이벤트 및 번호 연결
+
+        //일단 눌리지 못하게 주석 처리했음.
+        /*for (int i = 0; i< Item_Button.Length; i++)
+        {
+            int index = i;
+            Item_Button[i].onClick.AddListener(() => OnButtonClicked(index));
+            //AddListener() 버튼이 클릭될 때 실행될 함수를 지정하는 메서드
+        }*/
+        for (int i = 0; i < Item_Button.Length; i++)
+        {
+            Item_Button[i].interactable = false;
+        }
+
+        //예, 아니오 버튼에 이벤트 연결
+        Yes_Btn.onClick.AddListener(Yes_Click);
+        No_Btn.onClick.AddListener(No_Click);
+    }
+
+
+    //버튼 클릭 시 호출
+    void OnButtonClicked(int index)//index라는 매게변수 받아옴
+    {
+        Select_Index = index;
+        Hint_Panel.SetActive(true);
+    }
+
+    void Yes_Click()
+    {
+       if(Select_Index<Item_Name.Length)
+        {
+            Name_Text.text = Item_Name[Select_Index];
+        }
+
+        Hint_Panel.SetActive(false);
+        Show_Panel.SetActive(true);//아이템 이름 보여주기
+    }
+
+    void No_Click()
+    {
+        Hint_Panel.SetActive(false);
+    }
+
+    public void Back()
+    {
+        Show_Panel.SetActive(false);//아이템 이름 보여주기 비활성
+    }
+
+   
+
+}
