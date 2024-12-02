@@ -1,0 +1,243 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
+public class Select_Album : MonoBehaviour
+{
+    public GameObject winter_song;//윈터 음악 선택창
+
+    public GameObject song_select_btn;//음악 선택창 버튼 모음
+
+
+    public GameObject Quest1, Quest2, BGM;//?버튼 내용물
+
+    public Swipe_Win win;
+    public Swipe_Rev rev;
+
+    public Swipe_1_fin swipe_1;
+    //public Swipe_Win swipe_win;
+
+    public GameObject select_Album, Select_Song_Btn;
+    public GameObject[] Album;
+
+    public GameObject Piano, Piano_Btn, Piano_Content;
+
+    //추가
+    public Button[] btn;//현재 버튼 숫자와 대응되는 해당 버튼만 활성화
+    
+    //private Vector2 touchStartPos;
+    //private float maxTouchMove = 10f; // 터치를 드래그로 간주할 최대 거리 (픽셀 단위)
+
+    public static Select_Album instance;
+
+    public void Go_Out_Song()
+    {
+        //앨범 내부 음악 벗어나기
+        SFX_Manager.instance.SFX_Button();
+        //Title_Fade.instance.Fade_Canvas.SetActive(true);
+        Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
+
+        StartCoroutine(Go_Game());
+        IEnumerator Go_Game()
+        {
+            yield return new WaitForSeconds(1.4f);
+            //다시 선택하는 창으로
+
+            if (Album[0].activeSelf == true)
+            {
+                win.Reset();
+            }
+
+            if (Album[1].activeSelf == true)
+            {
+                rev.Reset();
+            }
+
+            else
+            {
+                Debug.Log("리셋할 필요 없음");
+            }
+
+            select_Album.SetActive(true);//앨범 선택 활성
+
+            Select_Song_Btn.SetActive(false);//뒤로가기 비활성
+
+            //UI_Button.instance.Piano_Btn.SetActive(true);//앨범 선택 뒤로가기 활성
+
+            //나머지 오브젝트 비활성
+            for (int i = 0; i < Album.Length; i++)
+            {
+                Album[i].SetActive(false);
+            }
+
+            Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
+            //StartCoroutine(SetActive_False());
+            BGM.SetActive(true);//테마 선택 BGM 활성화
+
+            Piano.SetActive(true);
+            Piano_Btn.SetActive(true);
+        }
+
+        /*IEnumerator SetActive_False()
+        {
+            yield return new WaitForSeconds(1.4f);
+            //Title_Fade.instance.Fade_Canvas.SetActive(false);
+        }*/
+    }
+
+    /*public void Start()
+    {
+        instance = this;
+
+        //화면 비율 알기 위한 코드
+        float screenWidth = Screen.width;
+        float screenHeight = Screen.height;
+
+        // Calculate the aspect ratio
+        float aspectRatio = screenWidth / screenHeight;
+
+        // Log the aspect ratio to the console
+        Debug.Log("현재 화면 비율: " + aspectRatio.ToString("F2"));
+    }*/
+
+    /*public void FixedUpdate()
+    {
+        if(Piano_Content.activeSelf == false)
+        {
+            swipe_1.Save();
+            swipe_1.Load();
+            Debug.Log("저장된 값 나와 " + swipe_1.scrollbar.GetComponent<Scrollbar>().value);
+            Debug.Log("저장된 값 나와: " + swipe_1.btnNumber);
+        }
+    }*/
+
+    public void Go_Quest1()
+    {
+        Quest1.SetActive(true);
+    }
+
+    public void Go_Quest2()
+    {
+        Quest2.SetActive(true);
+    }
+
+    public void Quest_X_Btn()
+    {
+        Quest1.SetActive(false);
+        Quest2.SetActive(false);
+    }
+
+    
+
+
+    public void Go_Album_Inside()
+    {
+
+        SFX_Manager.instance.SFX_Button();
+        // Title_Fade.instance.Fade_Canvas.SetActive(true);
+        Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
+
+        StartCoroutine(Go_Game());
+
+        IEnumerator Go_Game()
+        {
+            yield return new WaitForSeconds(1.4f);//2.25
+
+
+
+            //swipe_1.hor.enabled = false;//앨범으로 들어갈 때
+
+            win.Reset();
+            //rev.Reset();
+
+            //swipe_1.Reset();
+            select_Album.SetActive(false);//앨범 선택 비활성
+            Piano.SetActive(false);
+            Piano_Btn.SetActive(false);
+            //Album[0].SetActive(true);
+            Select_Song_Btn.SetActive(true);
+            BGM.SetActive(false);//테마 선택 BGM 비활성화
+
+            Debug.Log("실행되라고");
+
+            // 현재 버튼 번호에 따라 Album 활성화 및 비활성화
+
+            /* if (Swipe_Win.instance == null)
+             {
+                 Debug.LogError("Swipe_Win 인스턴스가 null입니다.");
+             }*/
+
+
+
+            //현재 챕터 5까지 앨범의 내용물을 생각하지 않을 관계로 일단 윈터와 레브리만 되도록 함.
+            for (int i = 0; i < 2; i++)
+            {
+               Album[i].SetActive(i == swipe_1.btnNumber); // btnNumber와 같으면 활성화, 아니면 비활성화
+                
+            }
+
+
+
+
+            //아래 이 코드는 챕터5개 곡이 모두 확정되면 사용할 예정
+            /*for (int i = 0; i < Album.Length; i++)
+            {
+                Album[i].SetActive(i == swipe_1.btnNumber); // btnNumber와 같으면 활성화, 아니면 비활성화
+
+            }*/
+
+            //Select_Song_Btn.SetActive(true);
+
+            Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
+            //StartCoroutine(SetActive_False());
+        }
+
+        /*IEnumerator SetActive_False()
+        {
+            yield return new WaitForSeconds(1.4f);
+            //Title_Fade.instance.Fade_Canvas.SetActive(false);
+
+        }*/
+
+    }
+
+    //스토리로
+    public void Back()
+    {
+        SFX_Manager.instance.SFX_Button();
+        Title_Fade.instance.Fade_Canvas.SetActive(true);
+
+        Title_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
+
+
+        StartCoroutine(Go_Game());
+        IEnumerator Go_Game()
+        {
+            yield return new WaitForSeconds(1.4f);
+            //swipe_1.Reset();
+            Piano.SetActive(false);
+            Piano_Btn.SetActive(false);
+            //Piano_Content.SetActive(false);
+
+            BGM.SetActive(false);//배경음악 비활성
+            Change_Music.instance.Music_Col_Parent.SetActive(true);//일반 배경 음악 활성
+
+            Title_Fade.instance.Story_Canvas.SetActive(true);//스토리 진행 관련 타이핑 나오도록
+
+            //swipe_1.hor.enabled = false;
+
+            Title_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
+            StartCoroutine(SetActive_False());
+        }
+
+        IEnumerator SetActive_False()
+        {
+            yield return new WaitForSeconds(1.4f);
+            Title_Fade.instance.Fade_Canvas.SetActive(false);
+        }
+
+       
+    }
+}
