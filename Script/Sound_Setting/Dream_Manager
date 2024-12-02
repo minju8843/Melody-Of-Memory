@@ -1,0 +1,265 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Audio;
+using System.IO;
+using UnityEngine.UI;
+using TMPro;
+
+[System.Serializable]
+public class Dream_Y_N
+{
+    public int Dream_Y_N_Index;//현재 꿈인지 아닌지
+}
+
+public class Dream_Manager : MonoBehaviour
+{
+    public static Dream_Manager instance;
+
+    //꿈 관련
+    public int dream_y_n = 0;//현재 현실임
+    //현재 꿈인지 아닌지 구분하는 거
+
+    //0 이면 꿈이 아님
+    //1 이면 꿈
+
+    public GameObject BGM_Collection;//배경음악 모음집 부모
+    
+    public GameObject[] BGM;//그냥 배경음악 모음집
+    public AudioSource[] BGM_Audio;
+
+    public GameObject[] Loop_SFX;//반복하는 효과음 모음
+
+    public Select_Album select_album;
+    public Winter_Music winter_music;
+    //public UI_Button ui_button;
+
+    public GameObject song_select_btn, select_Album;
+
+    private void Start()
+    {
+        instance = this;
+        Load_Dream_Y_N();//현재 꿈인지 아닌지 알려주는 거 불러오기
+
+        Change_Music.instance.Pause_Time = 0;
+    }
+
+    private void Update()
+    {
+
+        if(BGM_Collection.activeSelf == false)
+        {
+            //리듬게임 관련 창들이 활성화 상태라면
+            BGM_Collection.SetActive(false);
+        }
+
+        else if ((song_select_btn.activeSelf == true || select_Album.activeSelf == true))
+        {
+            //리듬게임 관련 창들이 활성화 상태라면
+            BGM_Collection.SetActive(false);
+        }
+
+        /*if ((winter_music.song_select_btn.activeSelf == true && ui_button.Piano_Btn == false) ||
+            (winter_music.song_select_btn.activeSelf == false && ui_button.Piano_Btn == true) ||
+            winter_music.Winter_Songs[0].activeSelf == true)
+        {
+            //리듬게임 관련 창들이 활성화 상태라면
+            BGM_Collection.SetActive(false);
+        }*/
+
+        else if (song_select_btn.activeSelf == false && select_Album.activeSelf == false
+            && BGM_Collection.activeSelf == true)
+        {
+            //리듬게임 관련 창들이 비활성화 상태라면
+            BGM_Collection.SetActive(true);
+        }
+
+
+
+        //꿈인지 아닌지 저장
+        Save_Dream_Y_N();
+
+
+        //뮤직 체인지 관련
+        if (Typing.instance.Sentences_0 == 29)//29
+        {
+            if (Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].isPlaying)
+            {
+                Change_Music.instance.Pause_Time = Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].time;
+                Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].Pause();
+
+                Debug.Log("퍼즈 걸어라");
+            }
+        }
+
+        if (Typing.instance.Sentences_0 == 30)//30
+        {
+            if (!Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].isPlaying)
+            {
+                Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].time = Change_Music.instance.Pause_Time;
+                Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].UnPause();
+                Debug.Log("재생되어라");
+
+            }
+        }
+
+        if (Typing.instance.Sentences_0 >= 34)
+        {
+            dream_y_n = 1;
+        }
+
+
+
+        //현재 꿈이면 꿈 음악 나오고 나머지 비활성화
+        /*if(Title_Fade.instance.Title_Canvas.activeSelf == false
+            && dream_y_n == 1)
+        {
+            //타이틀 비활성화되어 있고 꿈이라면
+            //꿈 배경음악 활성화
+            BGM_Collection.SetActive(true);
+        }*/
+
+        /*if (Title_Fade.instance.Title_Canvas.activeSelf == false
+            && dream_y_n == 0)
+        {
+            //타이틀 비활성화되어 있고 꿈이 아니라면
+            //꿈 배경음악 비활성화
+            BGM_Collection.SetActive(false);
+        }*/
+
+
+        //텍스트에 따라 다르게 할 것...
+        /*if (Title_Fade.instance.Title_Canvas.activeSelf == false
+            && dream_y_n == 0 && Typing.instance.Sentences_0 < 34)
+        {
+            BGM_Collection.SetActive(false);
+            //노래 나오기
+            for (int i = 0; i < BGM.Length; i++)
+            {
+                BGM[i].SetActive(false);
+                BGM_Audio[i].Pause();
+            }
+        }*/
+
+
+    }
+
+    private void FixedUpdate()
+    {
+        //여기부터는 꿈세계 -> 오류뜸
+        if (//Title_Fade.instance.Title_Canvas.activeSelf == false &&
+             dream_y_n == 1)
+        {
+            //BGM_Collection.SetActive(true);
+            
+            
+            //노래 나오기
+            /*for (int i = 0; i < BGM.Length; i++)
+            {
+                BGM[i].SetActive(false);
+            }*/
+
+            if( Typing.instance.Sentences_0 >= 34 && Typing.instance.Sentences_0 <= 45) //꿈 거리
+            {
+                for (int i = 1; i < BGM.Length; i++)
+                {
+                    BGM[i].SetActive(false);
+                }
+
+                BGM[0].SetActive(true);
+            }
+
+            if (Typing.instance.Sentences_0 >= 46)//반짝반짝 작은 별
+            {
+                BGM[0].SetActive(false);
+                for (int i = 2; i < BGM.Length; i++)
+                {
+                    BGM[i].SetActive(false);
+                }
+
+                BGM[1].SetActive(true);
+            }
+
+        }
+
+        else
+        {
+            //BGM_Collection.SetActive(false);
+            //노래 나오기
+            
+            for (int i = 0; i < BGM.Length; i++)
+            {
+                BGM[i].SetActive(false);
+                //BGM_Audio[i].Pause();
+            }
+        }
+    }
+        
+    
+    private void Load_Dream_Y_N()
+    {
+        string path = Application.persistentDataPath + "/Drema_Y_N.json";
+        //Typing.json라는 파일이 존재하는지 확인
+
+        if (File.Exists(path))
+        {
+            //파일이 존재하는 경우 파일을 읽어옴
+            string json = File.ReadAllText(path);
+
+            //JsonUtility.FromJson을 통해 GameData_Typing객체로 변환한다.
+            Dream_Y_N data = JsonUtility.FromJson<Dream_Y_N>(json);
+
+            //변환된 객체에서 Sentences_0_Index값을 불러와서 현재 Sentences_0에 저장
+            dream_y_n = data.Dream_Y_N_Index;
+
+
+        }
+        else
+        {
+            //파일이 존재하지 않는 경우
+            Debug.Log("현실입니당.");
+
+        }
+
+    }
+
+
+    private void Save_Dream_Y_N()
+    {
+        Dream_Y_N data = new Dream_Y_N();
+        data.Dream_Y_N_Index = dream_y_n;
+        string json = JsonUtility.ToJson(data);//JsonUtility.ToJson을 사용해
+        //GameData_Typing객체를 JSON문자열로 변환
+        File.WriteAllText(Application.persistentDataPath + "/Drema_Y_N.json", json);
+
+    }
+
+    public void Delete_Dream_Y_N()
+    {
+        string path = Application.persistentDataPath + "/Drema_Y_N.json";
+
+        if (File.Exists(path))
+        {//파일이 존재하는 경우
+
+            File.Delete(path);
+
+            //초기화 내용 적기
+            dream_y_n = 0;
+
+           
+        }
+        else
+        {
+            Debug.Log("삭제할 데이터 없음");
+        }
+
+        if (Typing.instance.Sentences_0 == 0)
+        {
+            // 재생을 처음부터 시작하려면 Pause_Time과 time을 둘 다 0으로 설정
+            Change_Music.instance.Pause_Time = 0;
+            Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].time = 0;
+
+            Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].Play();
+        }
+    }
+}
