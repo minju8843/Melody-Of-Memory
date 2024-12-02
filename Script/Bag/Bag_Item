@@ -1,0 +1,368 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System.IO;
+using UnityEngine.UI;
+using TMPro;
+using System.Linq;//LINQ를 사용하기 위해 필요
+
+[System.Serializable]
+public class Item//아이템 이름과 수량을 저장하기 위함
+{
+    public string itemName;//아이템 이름 저장
+    public int item_quantity;//아이템 수량 저장
+
+    public Item(string name, int quantity)//객체가 생성될 때 호출되는 함수
+    {//itemName과 item_quantity의 초기값을 설정할 수 있음.
+        itemName = name;
+        item_quantity = quantity;
+    }
+}
+
+[System.Serializable]
+public class ItemList
+{
+    public List<Item> items;
+
+    public ItemList(List<Item> items)
+    {
+        this.items = items;
+    }
+}
+
+public class Bag_Item : MonoBehaviour
+{
+    public Item_Color[] item_color;
+
+    public static Bag_Item instance;
+
+    //TMP-> 숫자 바꿀거, 분류 이름, 아이템의 이름
+    public TextMeshProUGUI Category_Name;//분류 이름
+
+    public TextMeshProUGUI Item_Count;//현재 아이템이 몇 개가 있는지
+    public TextMeshProUGUI Item_Name;//선택한 아이템의 이름
+
+    public Image[] Item_Image;//만약에 아이템이 하나도 없는 상태라면
+    //아이템의 색을 조절해야 함
+    public Image[] Item_Selected;//선택된 아이템의 이미지 색 바꾸기
+
+    public GameObject[] Select_Item;//아이템이 선택되었을 때 나올 이미지
+
+    public GameObject[] Category;//아이템 포함되어 있는 왼쪽 칸
+    public int Current_Page = 0;//현재 몇 페이지인지
+    public string[] Page_Name;
+
+    public Image Right_Arrow;//오른쪽 버튼
+    public Image Left_Arrow;//왼쪽 버튼
+
+    public GameObject How_To_Use;
+
+    public TextMeshProUGUI Present_Btn;
+
+    //아이템 수량 저장 딕셔너리(아이템 이름-수량)
+    public Dictionary<string, int> itemQuantities = new Dictionary<string, int>();
+
+    //여기부터 이벤트 트리거
+    public void Pointer_Enter()//버튼 위에 마우스 올렸을 때
+    {
+        Present_Btn.color = new Color(190f / 255f, 190f / 255f, 190f / 255f, 255f / 255f);
+    }
+
+    public void PointerDown()//클릭
+    {
+        Present_Btn.color = new Color(165f / 255f, 165f / 255f, 165f / 255f, 255f / 255f);
+        //구매 버튼을 클릭했다면
+
+    }
+
+    public void Pointer_Click()//클릭하고 난 후
+    {
+        Present_Btn.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Pointer_Up()//마우스 내렸다가 올렸을 때
+    {
+        Present_Btn.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Pointer_Exit()//마우스가 버튼에서 벗어났을 때
+    {
+        Present_Btn.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+    //여기까지 이벤트 트리거
+
+    public void Go_How_To_Use()
+    {
+        SFX_Manager.instance.SFX_Button();
+        How_To_Use.SetActive(true);
+    }
+
+    public void Back_How_To_Use()
+    {
+        SFX_Manager.instance.SFX_Button();
+        How_To_Use.SetActive(false);
+    }
+
+    public void Go_Back()
+    {
+        SFX_Manager.instance.SFX_Button();
+        UI_Button.instance.Bag.SetActive(false);
+    }
+
+    //아이템 수량 업데이트
+    public void AddItem(string itemName, int quantity)
+    {
+        // 키가 존재하지 않을 경우에만 추가
+        if (!itemQuantities.ContainsKey(itemName))
+        {
+            itemQuantities.Add(itemName, quantity); // 새로운 키와 값을 추가
+        }
+        else
+        {
+            itemQuantities[itemName] += quantity; // 기존 키의 값을 업데이트
+        }
+        //itemQuantities[itemName] += quantity;//아이템 수량 업데이트
+    }
+
+    //아이템의 수량을 직접 설정하는 기능
+    public int GetItemQuantity(string itemName)
+    {
+        if (itemQuantities.ContainsKey(itemName))
+        {
+            return itemQuantities[itemName];//아이템 있으면 수량 반호나
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public void Save_Item_Count()
+    {
+        //아이템 수량 저장
+
+        //딕셔너리를 리스트로 변환
+        List<Item> items = itemQuantities.Select(item => new Item(item.Key, item.Value)).ToList();
+
+        string json = JsonUtility.ToJson(new ItemList(items), true);
+        string path = Path.Combine(Application.persistentDataPath, "items.json");
+        File.WriteAllText(path, json);
+
+        //Debug.Log($"아이템 개수 저장됨: {json}"); // 저장된 JSON 로그
+
+    }
+
+    public void Load_Item_Count()
+    {
+        // 저장된 파일의 경로 설정
+        string path = Path.Combine(Application.persistentDataPath, "items.json");
+
+        // 파일이 존재하는지 확인
+        if (File.Exists(path))
+        {
+            // 파일 내용을 읽어옴
+            string json = File.ReadAllText(path);
+
+            // JSON 문자열을 ItemList 객체로 변환
+            ItemList itemList = JsonUtility.FromJson<ItemList>(json);
+
+            // 아이템 수량을 딕셔너리에 저장
+            itemQuantities = itemList.items.ToDictionary(item => item.itemName, item => item.item_quantity);
+
+            // 로드된 내용을 로그에 출력
+            //Debug.Log("아이템 개수 로드됨: " + json);
+        }
+        else
+        {
+            // 파일이 존재하지 않을 경우 경고 메시지 출력
+           // Debug.LogWarning("저장된 파일을 찾을 수 없습니다.");
+
+            // 모든 아이템 개수를 0으로 설정
+            foreach (var item in itemQuantities.Keys.ToList())
+            {
+                itemQuantities[item] = 0;
+            }
+        }
+    }
+
+    public void Rest_Item_Count()
+    {
+        //플레이어 저장한 아이템 카운트 리셋
+
+        string path = Application.persistentDataPath + "/items.json";
+
+        if (File.Exists(path))
+        {//파일이 존재하는 경우
+
+            File.Delete(path);
+
+            //초기화 내용 적기
+            foreach (var item in itemQuantities.Keys.ToList())
+            {
+                itemQuantities[item] = 0;
+            }
+            Load_Item_Count();
+        }
+        else
+        {
+            return;
+            //Debug.Log("삭제할 아이템 데이터 없음");
+        }
+
+       
+    }
+
+    void Start()
+    {
+        Current_Page = 0;//처음엔 0페이지
+        for(int i=1; i<Category.Length; i++)
+        {
+            Category[i].SetActive(false);
+        }
+        Category[0].SetActive(true);
+        //0페이지일 때는 0페이지 제외하고 나머지 페이지 비활성
+
+        Load_Item_Count();//아이템 개수 불러오기
+
+        instance = this;
+
+        Item_Count.text = "보유: ?개";
+        Item_Name.text = "???";
+        Category_Name.text = "과일";
+
+    }
+
+    void Update()
+    {
+        Save_Item_Count();
+    }
+
+    public void Go_Right()
+    {
+        SFX_Manager.instance.SFX_Button();
+        //오른쪽 화살표
+
+        //끝까지 다 봤으면 다시 처음으로
+        if (Current_Page >= Category.Length - 1)
+        {
+            Current_Page = 0;
+            for (int i = 1; i < Category.Length; i++)
+            {
+                Category[i].SetActive(false);
+            }
+            Category[0].SetActive(true);
+            Category_Name.text = Page_Name[0];
+        }
+
+        //그렇지 않으면 다음 페이지로
+        else if(Current_Page < Category.Length - 1)
+        {
+            Current_Page++;
+            for (int i = 0; i < Category.Length; i++)
+            {
+                Category[i].SetActive(false);
+            }
+
+            Category[Current_Page].SetActive(true);
+            Category_Name.text = Page_Name[Current_Page];
+        }
+
+        for (int i = 0; i < item_color.Length; i++)
+        {
+            //버튼 누를 때, 아이템별로 몇 개 있는지에 따라 색 변하는 걸로
+            //Update에 코드가 있으니 이상해서 이 스크립트로 옮김
+            item_color[i].Color_Chage();
+        }
+    }
+
+    public void Go_Left()
+    {
+        SFX_Manager.instance.SFX_Button();
+        //왼쪽 화살표
+
+        //현재 0페이지라면, 마지막 페이지로
+        if (Current_Page == 0)
+        {
+            Current_Page = Category.Length - 1;
+            for (int i = 0; i < Category.Length; i++)
+            {
+                Category[i].SetActive(false);
+            }
+            Category[Current_Page].SetActive(true);
+            Category_Name.text = Page_Name[Current_Page];
+        }
+
+        //현재 1페이지 이상이고 마지막 페이지 이하라면
+        else if (0 < Current_Page && Current_Page <= Category.Length - 1)
+        {
+            Current_Page--;
+            for (int i = 0; i < Category.Length; i++)
+            {
+                Category[i].SetActive(false);
+            }
+
+            Category[Current_Page].SetActive(true);
+            Category_Name.text = Page_Name[Current_Page];
+        }
+
+        for(int i = 0; i< item_color.Length; i++)
+        {
+            //버튼 누를 때, 아이템별로 몇 개 있는지에 따라 색 변하는 걸로
+            //Update에 코드가 있으니 이상해서 이 스크립트로 옮김
+            item_color[i].Color_Chage();
+        }
+    }
+
+    //오른쪽 화살표
+    public void Right_Pointer_Enter()//버튼 위에 마우스 올렸을 때
+    {
+        Right_Arrow.color = new Color(179f / 255f, 179f / 255f, 179f / 255f, 255f / 255f);
+    }
+
+    public void Right_PointerDown()//클릭
+    {
+        Right_Arrow.color = new Color(144f / 255f, 144f / 255f, 144f / 255f, 255f / 255f);
+    }
+
+    public void Right_Pointer_Click()//클릭하고 난 후
+    {
+        Right_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Right_Pointer_Up()//마우스 내렸다가 올렸을 때
+    {
+        Right_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Right_Pointer_Exit()//마우스가 버튼에서 벗어났을 때
+    {
+        Right_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    //왼쪽 화살표
+    public void Left_Pointer_Enter()//버튼 위에 마우스 올렸을 때
+    {
+        //193
+        Left_Arrow.color = new Color(179f / 255f, 179f / 255f, 179f / 255f, 255f / 255f);
+    }
+
+    public void Left_PointerDown()//클릭
+    {
+        Left_Arrow.color = new Color(144f / 255f, 144f / 255f, 144f / 255f, 255f / 255f);
+    }
+
+    public void Left_Pointer_Click()//클릭하고 난 후
+    {
+        Left_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Left_Pointer_Up()//마우스 내렸다가 올렸을 때
+    {
+        Left_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+
+    public void Left_Pointer_Exit()//마우스가 버튼에서 벗어났을 때
+    {
+        Left_Arrow.color = new Color(255f / 255f, 255f / 255f, 255f / 255f, 255f / 255f);
+    }
+}
