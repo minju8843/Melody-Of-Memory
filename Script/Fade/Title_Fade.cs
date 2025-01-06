@@ -26,20 +26,26 @@ public class Title_Fade : MonoBehaviour
         instance = this;
 
         //typ.Delete_Data();
-        Story_Canvas.SetActive(false);//½ºÅä¸® °ü·Ã Äµ¹ö½º ¾È º¸ÀÌµµ·Ï
+        Story_Canvas.SetActive(false);//ìŠ¤í† ë¦¬ ê´€ë ¨ ìº”ë²„ìŠ¤ ì•ˆ ë³´ì´ë„ë¡
 
         btn.enabled = true;
     }
 
-
+    public void FixedUpdate()
+    {
+       /* if(Winter_Music.instance.Title.activeSelf==false)
+        {
+            Story_Canvas.SetActive(true);//0104
+        }*/
+    }
 
     public void Go_Game()
     {
 
         if (picture_anim.GetCurrentAnimatorStateInfo(0).IsName("Show_Picture0"))
         {
-            //ÇöÀç ½ÇÇàÁßÀÎ ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌ¸§ÀÌ Show_Picture0 ¶ó¸é
-            //Áï ¾ÆÁ÷ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ´Ù ³ª¿ÀÁö ¾Ê¾Ò´Ù¸é
+            //í˜„ì¬ ì‹¤í–‰ì¤‘ì¸ ì• ë‹ˆë©”ì´ì…˜ ì´ë¦„ì´ Show_Picture0 ë¼ë©´
+            //ì¦‰ ì•„ì§ ì• ë‹ˆë©”ì´ì…˜ì´ ë‹¤ ë‚˜ì˜¤ì§€ ì•Šì•˜ë‹¤ë©´
             picture_anim.SetTrigger("Show_P");
 
             Title_Text_Anim.SetTrigger("Continue");
@@ -48,8 +54,8 @@ public class Title_Fade : MonoBehaviour
 
         if(picture_anim.GetCurrentAnimatorStateInfo(0).IsName("Show_Picture1"))
         {
-            //Á¤»óÀûÀ¸·Î ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡±îÁö ÁøÇàµÇ¾ú´Ù¸é
-            //ÆäÀÌµå ½ÇÇà ¹× °ÔÀÓ ÁøÇà °í°í
+            //ì •ìƒì ìœ¼ë¡œ ì• ë‹ˆë©”ì´ì…˜ì´ ëê¹Œì§€ ì§„í–‰ë˜ì—ˆë‹¤ë©´
+            //í˜ì´ë“œ ì‹¤í–‰ ë° ê²Œì„ ì§„í–‰ ê³ ê³ 
             btn.enabled = false;
 
             Fade_Anim.SetTrigger("Go_Black");
@@ -62,30 +68,53 @@ public class Title_Fade : MonoBehaviour
             }
 
 
-            //¿©±â¼­ °ÔÀÓÀ» ºÒ·¯¿Í¾ß ÇÏ³ª?
+            //ì—¬ê¸°ì„œ ê²Œì„ì„ ë¶ˆëŸ¬ì™€ì•¼ í•˜ë‚˜?
             StartCoroutine(Go_Game());
             IEnumerator Go_Game()
             {
                 yield return new WaitForSeconds(2.25f);
                 Fade_Anim.SetTrigger("Go_Empty");
-                Story_Canvas.SetActive(true);//½ºÅä¸® °ü·Ã Äµ¹ö½º º¸ÀÌµµ·Ï
+                Story_Canvas.SetActive(true);//ìŠ¤í† ë¦¬ ê´€ë ¨ ìº”ë²„ìŠ¤ ë³´ì´ë„ë¡
 
-                //½ºÅä¸® Áß¿¡ ÆäÀÌµå ÀÎ & ¾Æ¿ô »ç¿ëÇßÀ» ¶§, ºÒ·¯¿À´Â ±â´É
-                //TypingÄÚµå¿¡¼­ »ç¿ëÇÏ¸é ´ëÈ­Ã¢ÀÌ ³ª¿ÀÁö ¾Ê´Â ¹®Á¦ ¹ß»ı
+                Winter_Music.instance.Setting.SetActive(false);//ì„¤ì • ë¹„í™œì„± 0104
 
-                if (Typing.instance.Sentences_0 == 34)
+                //ì±•í„°1ìœ¼ë¡œ...
+                if (Typing.instance.Sentences_0 >= 140)
                 {
-                    Typing_Fade.instance.Sentences_0_34();
+
+                    Typing.instance.Dia.SetActive(false);
+
+                    Typing.instance.Chapter_1.SetActive(true);
+
+                    //StartCoroutine(Wait_First_Sentence());
+                    //IEnumerator Wait_First_Sentence()
+                    //{
+                        //yield return new WaitForSeconds(1.3f);
+                    Typing.instance.Chapter_1_Pro_Typ.SetActive(true);
+
+                    //Pro_Typing.instance.Load_Sentences_0();
+
+                    Typing.instance.Sentences_0 = 142;
+                    //Pro_Typing.instance.Load_Sentences_0();
+
+
+                    //}
+                }
+                //ìŠ¤í† ë¦¬ ì¤‘ì— í˜ì´ë“œ ì¸ & ì•„ì›ƒ ì‚¬ìš©í–ˆì„ ë•Œ, ë¶ˆëŸ¬ì˜¤ëŠ” ê¸°ëŠ¥
+                //Typingì½”ë“œì—ì„œ ì‚¬ìš©í•˜ë©´ ëŒ€í™”ì°½ì´ ë‚˜ì˜¤ì§€ ì•ŠëŠ” ë¬¸ì œ ë°œìƒ
+
+                if (Typing.instance.Sentences_0 == 33)//Typing.instance.Sentences_0 == 34)
+                {
+                    Typing_Fade.instance.Sentences_0_33();//Typing_Fade.instance.Sentences_0_34();
                     //Fade_Anim.SetTrigger("Go_Empty");
                     //StartCoroutine(SetActive_False());
 
                 }
 
-               
 
                 else
                 {
-                    Debug.Log("¾øÀ½");
+                    Debug.Log("ì—†ìŒ");
                 }
 
                 /*else if(Typing.instance.Sentences_0 != 33)
@@ -96,6 +125,7 @@ public class Title_Fade : MonoBehaviour
 
 
                 StartCoroutine(SetActive_False());
+                //Pro_Typing.instance.Load_Sentences_0();
             }
 
             IEnumerator SetActive_False()
