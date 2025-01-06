@@ -11,69 +11,68 @@ using UnityEngine.SceneManagement;
 public class Winter_Music : MonoBehaviour
 {
     public int song_select, story;
-
     public GameObject[] Winter_Songs;
 
-   // public GameObject[] Main_False;//ºñÈ°¼ºÇØ¾ß ÇÒ °Í
+   // public GameObject[] Main_False;//ë¹„í™œì„±í•´ì•¼ í•  ê²ƒ
 
-    public GameObject[] Pause_Black;//ÆÛÁî °ËÁ¤ Ã¢
-    public GameObject Pause;//ÆÛÁî ³»¿ë¹°¸¸ ¸ğ¾Æ³õÀº °Å
+    public GameObject[] Pause_Black;//í¼ì¦ˆ ê²€ì • ì°½
+    public GameObject Pause;//í¼ì¦ˆ ë‚´ìš©ë¬¼ë§Œ ëª¨ì•„ë†“ì€ ê±°
 
-    public GameObject[] Winter_Music_Obj;//À½¾Ç¸¸-¿ÀºêÁ§Æ®
-    public AudioSource[] Winter_Music_Audio;//À½¾Ç¸¸-AudioSource
+    public GameObject[] Winter_Music_Obj;//ìŒì•…ë§Œ-ì˜¤ë¸Œì íŠ¸
+    public AudioSource[] Winter_Music_Audio;//ìŒì•…ë§Œ-AudioSource
 
-    //ÇöÀç °îÀ¸·Î µé¾î°¥ ¼ö ÀÖ´Â »óÅÂÀÎÁö È®ÀÎ
-    //ÀÌ°Å´Â Å¸ÀÌÇÎ¿¡ µû¶ó ¹Ù²î±â ¶§¹®¿¡ ±»ÀÌ ÀúÀå/·Îµå ÇÊ¿ä¾øÀ½
+    //í˜„ì¬ ê³¡ìœ¼ë¡œ ë“¤ì–´ê°ˆ ìˆ˜ ìˆëŠ” ìƒíƒœì¸ì§€ í™•ì¸
+    //ì´ê±°ëŠ” íƒ€ì´í•‘ì— ë”°ë¼ ë°”ë€Œê¸° ë•Œë¬¸ì— êµ³ì´ ì €ì¥/ë¡œë“œ í•„ìš”ì—†ìŒ
     public bool Music_Open_1 = false;
     public bool Music_Open_2 = false;
     public bool Music_Open_3 = false;
     public bool Music_Open_4 = false;
 
-    public float Pause_Time_0 = 0;//ÀÏ½Ã Á¤Áö¶§ ¾µ°Å
-    public float Pause_Time_1 = 0;//ÀÏ½Ã Á¤Áö¶§ ¾µ°Å
-    public float Pause_Time_2 = 0;//ÀÏ½Ã Á¤Áö¶§ ¾µ°Å
-    public float Pause_Time_3 = 0;//ÀÏ½Ã Á¤Áö¶§ ¾µ°Å
-    public float Pause_Time_4 = 0;//ÀÏ½Ã Á¤Áö¶§ ¾µ°Å
+    public float Pause_Time_0 = 0;//ì¼ì‹œ ì •ì§€ë•Œ ì“¸ê±°
+    public float Pause_Time_1 = 0;//ì¼ì‹œ ì •ì§€ë•Œ ì“¸ê±°
+    public float Pause_Time_2 = 0;//ì¼ì‹œ ì •ì§€ë•Œ ì“¸ê±°
+    public float Pause_Time_3 = 0;//ì¼ì‹œ ì •ì§€ë•Œ ì“¸ê±°
+    public float Pause_Time_4 = 0;//ì¼ì‹œ ì •ì§€ë•Œ ì“¸ê±°
 
-    public Button[] Winter_Pause_5;//ÆÛÁî ¹öÆ° 5°³(°è¼Ó ÇÒ ¶§, ¹öÆ°ÀÌ ´­¸®Áö ¾Êµµ·Ï)
+    public Button[] Winter_Pause_5;//í¼ì¦ˆ ë²„íŠ¼ 5ê°œ(ê³„ì† í•  ë•Œ, ë²„íŠ¼ì´ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
 
-    public GameObject[] Winter_0_Note;//À©ÅÍ 0¹øÂ° ³ëÆ® ¹öÆ°(ÆÛÁîÇÒ ¶§ ´­¸®Áö ¾Êµµ·Ï)
-    public GameObject[] Winter_1_Note;//À©ÅÍ 1¹øÂ° ³ëÆ® ¹öÆ°(ÆÛÁîÇÒ ¶§ ´­¸®Áö ¾Êµµ·Ï)
-    public GameObject[] Winter_2_Note;//À©ÅÍ 2¹øÂ° ³ëÆ® ¹öÆ°(ÆÛÁîÇÒ ¶§ ´­¸®Áö ¾Êµµ·Ï)
-    public GameObject[] Winter_3_Note;//À©ÅÍ 3¹øÂ° ³ëÆ® ¹öÆ°(ÆÛÁîÇÒ ¶§ ´­¸®Áö ¾Êµµ·Ï)
-    public GameObject[] Winter_4_Note;//À©ÅÍ 4¹øÂ° ³ëÆ® ¹öÆ°(ÆÛÁîÇÒ ¶§ ´­¸®Áö ¾Êµµ·Ï)
+    public GameObject[] Winter_0_Note;//ìœˆí„° 0ë²ˆì§¸ ë…¸íŠ¸ ë²„íŠ¼(í¼ì¦ˆí•  ë•Œ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
+    public GameObject[] Winter_1_Note;//ìœˆí„° 1ë²ˆì§¸ ë…¸íŠ¸ ë²„íŠ¼(í¼ì¦ˆí•  ë•Œ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
+    public GameObject[] Winter_2_Note;//ìœˆí„° 2ë²ˆì§¸ ë…¸íŠ¸ ë²„íŠ¼(í¼ì¦ˆí•  ë•Œ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
+    public GameObject[] Winter_3_Note;//ìœˆí„° 3ë²ˆì§¸ ë…¸íŠ¸ ë²„íŠ¼(í¼ì¦ˆí•  ë•Œ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
+    public GameObject[] Winter_4_Note;//ìœˆí„° 4ë²ˆì§¸ ë…¸íŠ¸ ë²„íŠ¼(í¼ì¦ˆí•  ë•Œ ëˆŒë¦¬ì§€ ì•Šë„ë¡)
 
-    //½ÃÀÛ ¹× ÆÛÁîÇÒ ¶§ »ç¿ëÇÒ ½ºÅ©¸³Æ®(Long_Note, Long_Col, Note_1105)
+    //ì‹œì‘ ë° í¼ì¦ˆí•  ë•Œ ì‚¬ìš©í•  ìŠ¤í¬ë¦½íŠ¸(Long_Note, Long_Col, Note_1105)
     //0
-    public Long_Note[] Win_0_Long;//·Õ ³ëÆ®
-    public Long_Col[] Win_0_Long_Fin;//·Õ ³ëÆ® ³¡ºÎºĞ
-    public Note_1105[] Win_0_Note;//±×³É ³ëÆ®
+    public Long_Note[] Win_0_Long;//ë¡± ë…¸íŠ¸
+    public Long_Col[] Win_0_Long_Fin;//ë¡± ë…¸íŠ¸ ëë¶€ë¶„
+    public Note_1105[] Win_0_Note;//ê·¸ëƒ¥ ë…¸íŠ¸
 
     //1
-    public Long_Note[] Win_1_Long;//·Õ ³ëÆ®
-    public Long_Col[] Win_1_Long_Fin;//·Õ ³ëÆ® ³¡ºÎºĞ
-    public Note_1105[] Win_1_Note;//±×³É ³ëÆ®
+    public Long_Note[] Win_1_Long;//ë¡± ë…¸íŠ¸
+    public Long_Col[] Win_1_Long_Fin;//ë¡± ë…¸íŠ¸ ëë¶€ë¶„
+    public Note_1105[] Win_1_Note;//ê·¸ëƒ¥ ë…¸íŠ¸
 
     //2
-    public Long_Note[] Win_2_Long;//·Õ ³ëÆ®
-    public Long_Col[] Win_2_Long_Fin;//·Õ ³ëÆ® ³¡ºÎºĞ
-    public Note_1105[] Win_2_Note;//±×³É ³ëÆ®
+    public Long_Note[] Win_2_Long;//ë¡± ë…¸íŠ¸
+    public Long_Col[] Win_2_Long_Fin;//ë¡± ë…¸íŠ¸ ëë¶€ë¶„
+    public Note_1105[] Win_2_Note;//ê·¸ëƒ¥ ë…¸íŠ¸
 
     //3
-    public Long_Note[] Win_3_Long;//·Õ ³ëÆ®
-    public Long_Col[] Win_3_Long_Fin;//·Õ ³ëÆ® ³¡ºÎºĞ
-    public Note_1105[] Win_3_Note;//±×³É ³ëÆ®
+    public Long_Note[] Win_3_Long;//ë¡± ë…¸íŠ¸
+    public Long_Col[] Win_3_Long_Fin;//ë¡± ë…¸íŠ¸ ëë¶€ë¶„
+    public Note_1105[] Win_3_Note;//ê·¸ëƒ¥ ë…¸íŠ¸
 
     //4
-    public Long_Note[] Win_4_Long;//·Õ ³ëÆ®
-    public Long_Col[] Win_4_Long_Fin;//·Õ ³ëÆ® ³¡ºÎºĞ
-    public Note_1105[] Win_4_Note;//±×³É ³ëÆ®
+    public Long_Note[] Win_4_Long;//ë¡± ë…¸íŠ¸
+    public Long_Col[] Win_4_Long_Fin;//ë¡± ë…¸íŠ¸ ëë¶€ë¶„
+    public Note_1105[] Win_4_Note;//ê·¸ëƒ¥ ë…¸íŠ¸
 
 
-    public TextMeshProUGUI Pause_Text;//ÆÛÁî ÅØ½ºÆ® (0~5±îÁö ÀÖÀ» ¿¹Á¤)
+    public TextMeshProUGUI Pause_Text;//í¼ì¦ˆ í…ìŠ¤íŠ¸ (0~5ê¹Œì§€ ìˆì„ ì˜ˆì •)
 
 
-    //¹öÆ° 5°³¿¡ ´ëÇÑ bool
+    //ë²„íŠ¼ 5ê°œì— ëŒ€í•œ bool
     public bool Continue = false;
     public bool Reset = false;
     public bool Story = false;
@@ -87,40 +86,40 @@ public class Winter_Music : MonoBehaviour
 
     public bool keep_speed = false;
 
-    //public GameObject winter_song;//À©ÅÍ À½¾Ç ¼±ÅÃÃ¢
+    //public GameObject winter_song;//ìœˆí„° ìŒì•… ì„ íƒì°½
 
-    public GameObject song_select_btn;//À½¾Ç ¼±ÅÃÃ¢ ¹öÆ° ¸ğÀ½
-    public GameObject select_Album;//¾Ù¹ü ¼±ÅÃ¶õ
+    public GameObject song_select_btn;//ìŒì•… ì„ íƒì°½ ë²„íŠ¼ ëª¨ìŒ
+    public GameObject select_Album;//ì•¨ë²” ì„ íƒë€
     public Select_Album select_album;
 
-    public GameObject Piano, Piano_Btn, Setting, HeadPhone, album_bgm, Title;//
+    public GameObject Piano, Piano_Btn, Setting, HeadPhone, album_bgm, Title, Beat_Panel;
 
     //public Swipe_Rev rev;
     //public Swipe_Win win;
     //public Swipe_1_fin swipe_1;
 
-    //public Select_Album select_album;//¾Ù¹ü ¼±ÅÃ¶õ °ü·Ã ½ºÅ©¸³Æ®
+    //public Select_Album select_album;//ì•¨ë²” ì„ íƒë€ ê´€ë ¨ ìŠ¤í¬ë¦½íŠ¸
 
     public Manager_0[] manager;
 
 
     public void Start()
     {
-        Input.multiTouchEnabled = true;  // ¸ÖÆ¼ÅÍÄ¡ È°¼ºÈ­
-        Rhythm_Fade.instance.Fade.SetActive(false);//¸®µë°ÔÀÓ ÆäÀÌµå °ü·Ã ºñÈ°¼º
+        Input.multiTouchEnabled = true;  // ë©€í‹°í„°ì¹˜ í™œì„±í™”
+        //Rhythm_Fade.instance.Fade.SetActive(false);//ë¦¬ë“¬ê²Œì„ í˜ì´ë“œ ê´€ë ¨ ë¹„í™œì„±
         Application.targetFrameRate = 60;
 
         Pause_Text.text = "PAUSE";
         instance = this;
 
-        //¾À ÀÌµ¿ÇÒ ¶§ È¤½Ã À¯¿ëÇÒ±îºÁ
+        //ì”¬ ì´ë™í•  ë•Œ í˜¹ì‹œ ìœ ìš©í• ê¹Œë´
         song_select = 0;
         story = 0;
     }
 
     private void Awake()
     {
-        Input.multiTouchEnabled = true;  // ¸ÖÆ¼ÅÍÄ¡ È°¼ºÈ­
+        Input.multiTouchEnabled = true;  // ë©€í‹°í„°ì¹˜ í™œì„±í™”
 
         Pause_Text.text = "PAUSE";
         if (instance == null)
@@ -129,7 +128,7 @@ public class Winter_Music : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject); // ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ ÀÖ´Ù¸é ÇöÀç °´Ã¼¸¦ Á¦°Å
+            Destroy(gameObject); // ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ìˆë‹¤ë©´ í˜„ì¬ ê°ì²´ë¥¼ ì œê±°
         }
     }
 
@@ -141,61 +140,62 @@ public class Winter_Music : MonoBehaviour
         for (int i = 0; i < Pause_Black.Length; i++)
         {
 
-            //ÆÛÁî Ã¢ÀÌ ¿­·ÁÀÖ´Â °æ¿ì
-            if (Pause.activeSelf == true  && Pause_Text.text == "PAUSE")
+            //í¼ì¦ˆ ì°½ì´ ì—´ë ¤ìˆëŠ” ê²½ìš° + ê²°ê³¼ì°½ ë¹„í™œì„± + ë¦¬ë“¬ê²Œì„ ì‹¤í–‰ì¤‘
+            if (Pause.activeSelf == true  && Pause_Text.text == "PAUSE" && manager[0].Result_Panel.activeSelf == false
+                && Winter_Songs[0].activeSelf == true)
             {//Pause.activeSelf == true && UI_Button.instance.Main_False[3].activeSelf == false && Pause_Text.text == "PAUSE"
-                if (Input.GetButtonDown("Cancel"))
+                if (Input.GetButtonDown("Cancel") && Beat_Panel.activeSelf == false)
                 {
-                    //µÚ·Î°¡±â ¹öÆ°À» ´­·¶´Ù¸é
+                    //ë’¤ë¡œê°€ê¸° ë²„íŠ¼ì„ ëˆŒë €ë‹¤ë©´
 
-                    //¾Æ·¡ °è¼ÓÇÏ±â ¹öÆ° ´­·¶À» ¶§¿Í °á°ú°¡ °°¾Æ¾ß ÇÑ´Ù.
-                    //¸î ÃÊÈÄ¿¡ °è¼Ó ÁøÇà
+                    //ì•„ë˜ ê³„ì†í•˜ê¸° ë²„íŠ¼ ëˆŒë €ì„ ë•Œì™€ ê²°ê³¼ê°€ ê°™ì•„ì•¼ í•œë‹¤.
+                    //ëª‡ ì´ˆí›„ì— ê³„ì† ì§„í–‰
                     Continue_true();
 
                 }
 
                 else if (!Input.GetButtonDown("Cancel"))
                 {
-                    //ÆÛÁî Ã¢ÀÌ ¿­·ÁÀÖÀ» ¶§
+                    //í¼ì¦ˆ ì°½ì´ ì—´ë ¤ìˆì„ ë•Œ
 
 
-                    //°è¼ÓÇÏ±â ¹öÆ°À» ´­·¶À» °æ¿ì
-                    //-> Ready·Î ¹Ù²Ù°í ¿ø·¡ ¼Óµµ´ë·Î
-                    if (Continue == true)
+                    //ê³„ì†í•˜ê¸° ë²„íŠ¼ì„ ëˆŒë €ì„ ê²½ìš°
+                    //-> Readyë¡œ ë°”ê¾¸ê³  ì›ë˜ ì†ë„ëŒ€ë¡œ
+                    if (Continue == true && Beat_Panel.activeSelf == false)
                     {
-                        //°è¼Ó ¹öÆ°
-                        //ÆÛÁî 5°³ ¹öÆ° ¸ğµÎ ´­¸®Áö ¾Êµµ·Ï
+                        //ê³„ì† ë²„íŠ¼
+                        //í¼ì¦ˆ 5ê°œ ë²„íŠ¼ ëª¨ë‘ ëˆŒë¦¬ì§€ ì•Šë„ë¡
                         Continue_true();
                         //Touch_Count = 0;
 
                     }
 
-                    //´Ù½ÃÇÏ±â ¹öÆ°À» ´­·¶À» °æ¿ì
-                    //->ÆäÀÌµå ÀÎ & ¾Æ¿ô ÇÏ°í ¸®¼Â
+                    //ë‹¤ì‹œí•˜ê¸° ë²„íŠ¼ì„ ëˆŒë €ì„ ê²½ìš°
+                    //->í˜ì´ë“œ ì¸ & ì•„ì›ƒ í•˜ê³  ë¦¬ì…‹
                     else if (Reset == true)
                     {
-                        ReStart_True();//¾ÆÁ÷ ³»¿ë¹° ¾È ¸¸µê
+                        ReStart_True();//ì•„ì§ ë‚´ìš©ë¬¼ ì•ˆ ë§Œë“¦
                                        // Touch_Count = 0;
                     }
 
-                    //½ºÅä¸® ¹öÆ°À» ´­·¶À» °æ¿ì
-                    //-> ÆäÀÌµå ÀÎ & ¾Æ¿ô ÇÏ°í ¸®¼Â + ½ºÅä¸®·Î ÀÌµ¿
+                    //ìŠ¤í† ë¦¬ ë²„íŠ¼ì„ ëˆŒë €ì„ ê²½ìš°
+                    //-> í˜ì´ë“œ ì¸ & ì•„ì›ƒ í•˜ê³  ë¦¬ì…‹ + ìŠ¤í† ë¦¬ë¡œ ì´ë™
                     else if (Story == true)
                     {
                         Story_True();
                         //Touch_Count = 0;
                     }
 
-                    //À½¾Ç¼±ÅÃ ¹öÆ°À» ´­·¶À» °æ¿ì
-                    // -> ÆäÀÌµå ÀÎ & ¾Æ¿ôÇÏ°í ¸®¼Â + À½¾Ç ¼±ÅÃÀ¸·Î ÀÌµ¿
+                    //ìŒì•…ì„ íƒ ë²„íŠ¼ì„ ëˆŒë €ì„ ê²½ìš°
+                    // -> í˜ì´ë“œ ì¸ & ì•„ì›ƒí•˜ê³  ë¦¬ì…‹ + ìŒì•… ì„ íƒìœ¼ë¡œ ì´ë™
                     else if (Songs == true)
                     {
                         Select_Song_True();
                         //Touch_Count = 0;
                     }
 
-                    //¹ÚÀÚ ±³Á¤ ¹öÆ°À» ´­·¶À» °æ¿ì
-                    //-> ¼Óµµ Á¤ÁöµÈ Ã¤·Î Ã¢ ÀÌµ¿
+                    //ë°•ì êµì • ë²„íŠ¼ì„ ëˆŒë €ì„ ê²½ìš°
+                    //-> ì†ë„ ì •ì§€ëœ ì±„ë¡œ ì°½ ì´ë™
                     else if (Tempo == true)
                     {
                         Tempo_True();
@@ -203,7 +203,7 @@ public class Winter_Music : MonoBehaviour
 
                     else
                     {
-                        //Debug.Log("ÆÛÁî Ã¢¿¡¼­ ¹öÆ° ´­¸° °Å ¾ø¼ö´Ù.");
+                        //Debug.Log("í¼ì¦ˆ ì°½ì—ì„œ ë²„íŠ¼ ëˆŒë¦° ê±° ì—†ìˆ˜ë‹¤.");
                         Stop_Speed();
                         Pause_Time_0 = Winter_Music_Audio[0].time;
                         Winter_Music_Audio[0].Pause();
@@ -211,46 +211,48 @@ public class Winter_Music : MonoBehaviour
                 }
             }
 
-            //ÆÛÁî Ã¢ÀÌ ´İÇôÀÖ´Â °æ¿ì
-            if (Pause.activeSelf == false && Pause_Text.text == "PAUSE")
+            //í¼ì¦ˆ ì°½ì´ ë‹«í˜€ìˆëŠ” ê²½ìš° + ê²°ê³¼ì°½ ì•ˆ ë³´ì„ + ë¦¬ë“¬ê²Œì„ ì‹¤í–‰ì¤‘
+            if (Pause.activeSelf == false && Pause_Text.text == "PAUSE" && manager[0].Result_Panel.activeSelf == false
+                && Winter_Songs[0].activeSelf == true)
             {//Pause.activeSelf == false && UI_Button.instance.Main_False[3].activeSelf == false && Pause_Text.text == "PAUSE"
                 //Pause_Text.text = "PAUSE";
 
                 if (Input.GetButtonDown("Cancel"))
                 {
-                    //ÆÛÁîÃ¢ ¿­¸², ¼Óµµ 0
+                    //í¼ì¦ˆì°½ ì—´ë¦¼, ì†ë„ 0
                     for (int k = 0; k < Pause_Black.Length; k++)
                     {
-                        Pause_Black[k].SetActive(true);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌµµ·Ï
+                        Pause_Black[k].SetActive(true);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ë„ë¡
                     }
 
-                    //ÆÛÁî ¹öÆ° ±â´É È°¼ºÈ­
+                    //í¼ì¦ˆ ë²„íŠ¼ ê¸°ëŠ¥ í™œì„±í™”
                     for (int j = 0; j < Winter_Pause_5.Length; j++)
                     {
                         Winter_Pause_5[j].enabled = true;
                     }
 
-                    //³ëÆ® ¹öÆ° ¿ÀºêÁ§Æ® ºñÈ°¼º
+                    //ë…¸íŠ¸ ë²„íŠ¼ ì˜¤ë¸Œì íŠ¸ ë¹„í™œì„±
                     for (int k = 0; k < Winter_0_Note.Length; k++)
                     {
-                        Winter_0_Note[k].SetActive(false);//¹öÆ° ´­¸®µµ·Ï
-                                                          //Winter_1_Note[k].SetActive(false);//¹öÆ° ´­¸®µµ·Ï
-                                                          //Winter_2_Note[k].SetActive(false);//¹öÆ° ´­¸®µµ·Ï
-                                                          //Winter_3_Note[k].SetActive(false);//¹öÆ° ´­¸®µµ·Ï
-                                                          //Winter_4_Note[k].SetActive(false);//¹öÆ° ´­¸®µµ·Ï
+                        Winter_0_Note[k].SetActive(false);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                          //Winter_1_Note[k].SetActive(false);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                          //Winter_2_Note[k].SetActive(false);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                          //Winter_3_Note[k].SetActive(false);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                          //Winter_4_Note[k].SetActive(false);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
                     }
 
-                    Pause.SetActive(true);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌµµ·Ï
+                    SFX_Manager.instance.SFX_Button();
+                    Pause.SetActive(true);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ë„ë¡
                     Stop_Speed();
                     Pause_Time_0 = Winter_Music_Audio[0].time;
                     Winter_Music_Audio[0].Pause();
 
                 }
 
-                else if (!Input.GetButtonDown("Cancel") && Pause_Text.text == "PAUSE")
+                else if (!Input.GetButtonDown("Cancel") && Pause_Text.text == "PAUSE" )
                 {
-                    //ÆÛÁî Ã¢ÀÌ ´İÇôÀÖ´Âµ¥, µÚ·Î°¡±â ¹öÆ°À» ´©¸£Áö ¾Ê¾ÒÀ» °æ¿ì
-                    //°è¼Ó Àç»ı, ¼Óµµ ¿ø·¡´ë·Î
+                    //í¼ì¦ˆ ì°½ì´ ë‹«í˜€ìˆëŠ”ë°, ë’¤ë¡œê°€ê¸° ë²„íŠ¼ì„ ëˆ„ë¥´ì§€ ì•Šì•˜ì„ ê²½ìš°
+                    //ê³„ì† ì¬ìƒ, ì†ë„ ì›ë˜ëŒ€ë¡œ
                     Keep_Speed();
 
                 }
@@ -269,7 +271,7 @@ public class Winter_Music : MonoBehaviour
     public void Stop_Speed()
     {
         keep_speed = false;
-
+        Win_0_Timer.instance.PauseTimer();
     }
 
 
@@ -284,7 +286,9 @@ public class Winter_Music : MonoBehaviour
         Continue = false;
         SFX_Manager.instance.SFX_Button();
 
-        //ÆÛÁî ¹öÆ°µé ºñÈ°¼º
+        //Win_0_Timer.instance.PauseTimer();
+
+        //í¼ì¦ˆ ë²„íŠ¼ë“¤ ë¹„í™œì„±
         for (int j = 0; j < Winter_Pause_5.Length; j++)
         {
             Winter_Pause_5[j].enabled = false;
@@ -296,13 +300,13 @@ public class Winter_Music : MonoBehaviour
         StartCoroutine(No_Pause());
         IEnumerator No_Pause()
         {
-            //ÆÛÁî Ã¢ ¾ø¾Ö±â
+            //í¼ì¦ˆ ì°½ ì—†ì• ê¸°
             yield return new WaitForSecondsRealtime(1.0f);
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
 
             StartCoroutine(Go_Game());
@@ -316,28 +320,29 @@ public class Winter_Music : MonoBehaviour
 
             for (int i = 0; i < Winter_Music_Obj.Length; i++)
             {
-                if (Winter_Music_Obj[i].activeSelf == true)//ÇöÀç È°¼ºÈ­µÈ(Àç»ıÁßÀÌ´ø)¿ÀºêÁ§Æ®¸¸ À½¾Ç Àç»ı
+                if (Winter_Music_Obj[i].activeSelf == true)//í˜„ì¬ í™œì„±í™”ëœ(ì¬ìƒì¤‘ì´ë˜)ì˜¤ë¸Œì íŠ¸ë§Œ ìŒì•… ì¬ìƒ
                 {
                     //Pause_Text.text = "PAUSE";
-                    //³ëÆ® ¹öÆ° ´­¸®µµ·Ï
+                    //ë…¸íŠ¸ ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
                     for (int k = 0; k < Winter_0_Note.Length; k++)
                     {
-                        Winter_0_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                         //Winter_1_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                         //Winter_2_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                         //Winter_3_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                         //Winter_4_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
+                        Winter_0_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                         //Winter_1_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                         //Winter_2_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                         //Winter_3_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                         //Winter_4_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
                     }
 
                     //Winter_Music_Audio[i].time = Pause_Time_0;
                     //Winter_Music_Audio[i].Play();
                     Winter_Music_Audio[0].time = Pause_Time_0;
-                    Winter_Music_Audio[0].UnPause();
+                    Win_0_Timer.instance.ResumeTimer();
+                    //Winter_Music_Audio[0].UnPause();
 
 
-                    Debug.Log("ÆÛÁîµÈ °Å ´Ù½Ã Àç»ı");
+                    Debug.Log("í¼ì¦ˆëœ ê±° ë‹¤ì‹œ ì¬ìƒ");
 
-                    //±×³É ³ëÆ®, ·Õ ³ëÆ®, ·Õ ³ëÆ® ³¡ºÎºĞ Àç»ı
+                    //ê·¸ëƒ¥ ë…¸íŠ¸, ë¡± ë…¸íŠ¸, ë¡± ë…¸íŠ¸ ëë¶€ë¶„ ì¬ìƒ
                     Keep_Speed();
 
 
@@ -355,7 +360,7 @@ public class Winter_Music : MonoBehaviour
 
         IEnumerator Go_Game2()
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSecondsRealtime(0.2f);
             Pause_Text.text = "PAUSE";
         }
 
@@ -363,10 +368,12 @@ public class Winter_Music : MonoBehaviour
 
     public void Go_ReStart()
     {
-        //´Ù½Ã ½ÃÀÛ ¹öÆ°
+       
+
+        //ë‹¤ì‹œ ì‹œì‘ ë²„íŠ¼
         Reset = true;
-        //ÀúÀåµÈ ³ëÆ®µéÀÇ À§Ä¡¸¦ ºÒ·¯¿Í¾ß ÇÔ.
-        //ÀÏ´Ü ³ªÁß¿¡.
+        //ì €ì¥ëœ ë…¸íŠ¸ë“¤ì˜ ìœ„ì¹˜ë¥¼ ë¶ˆëŸ¬ì™€ì•¼ í•¨.
+        //ì¼ë‹¨ ë‚˜ì¤‘ì—.
 
 
 
@@ -374,59 +381,44 @@ public class Winter_Music : MonoBehaviour
 
     public void ReStart_True()
     {
-
-        //À½¾Ç ÆÛÁî ½Ã°£ ÃÊ±âÈ­
+        Reset = false;
+        Manager_0.instance.hasShownResult = false;
+        //ìŒì•… í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
         SFX_Manager.instance.SFX_Button();
 
-        //À½¾Ç ¼±ÅÃ¶õÀÌ ÀÖ´Â °÷À¸·Î ÀÌµ¿
+        //ìŒì•… ì„ íƒë€ì´ ìˆëŠ” ê³³ìœ¼ë¡œ ì´ë™
         Rhythm_Fade.instance.Fade.SetActive(true);
 
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
-
+        //Music_Go();
 
         StartCoroutine(Go_Game());
 
         IEnumerator Go_Game()
         {
             yield return new WaitForSecondsRealtime(1.4f);//1.4
-                                                          //´Ù½Ã ½ÃÀÛ ¹öÆ°
+                                                          //ë‹¤ì‹œ ì‹œì‘ ë²„íŠ¼
 
-            //SceneManager.LoadScene("Go_Rhythm");//¾À ÀÌµ¿
+
+            manager[0].Result_Panel.SetActive(false);//ê²°ê³¼ì°½ ë³´ì´ì§€ ì•Šë„ë¡
+
             Win_Note_Pos.instance.Load_AllPositions();
+            
 
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Songs[0].SetActive(true);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ È°¼º
-
-            for (int k = 0; k < Pause_Black.Length; k++)
-            {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
-            }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
-
-            // Select_Album.instance.winter_song.SetActive(false);//À©ÅÍ À½¾Ç ¼±ÅÃ ºñÈ°¼º
-            //Select_Album.instance.song_select_btn.SetActive(false);//À½¾Ç ¼±ÅÃ ¹öÆ°µé ºñÈ°¼º
-
-            //¿©±â Ãß°¡
-            /*for (int i = 0; i < UI_Button.instance.Main_False.Length; i++)
-            {
-                UI_Button.instance.Main_False[i].SetActive(false);
-            }*/
+            Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            Winter_Songs[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ í™œì„±
 
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
-            //UI_Button.instance.Piano_Btn.SetActive(false);
-
-            /* manager[0].currentScore = 0.0f;
-             manager[0].Good_Hits = 0;
-             manager[0].Perfect_Hits = 0;
-             manager[0].Miss_Hits = 0;
-             manager[0].Long_Note_Miss = 0;
-            */
-
+            for (int k = 0; k < Pause_Black.Length; k++)
+            {
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
+            }
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
             foreach (var m in manager)
             {
@@ -436,19 +428,19 @@ public class Winter_Music : MonoBehaviour
                 m.Miss_Hits = 0;
                 m.Long_Note_Miss = 0;
 
-                m.ScoreText.text = "0.00%";//Á¡¼ö ¸®¼Â
+                m.ScoreText.text = "0.00%";//ì ìˆ˜ ë¦¬ì…‹
                 m.currentScore = 0;
             }
 
 
 
-            //·Õ ³ëÆ®¿Í ·Õ ³ëÆ® ³¡ºÎºĞ¿¡ ÀÖ´Â Äİ¶óÀÌ´õ È°¼ºÈ­
+            //ë¡± ë…¸íŠ¸ì™€ ë¡± ë…¸íŠ¸ ëë¶€ë¶„ì— ìˆëŠ” ì½œë¼ì´ë” í™œì„±í™”
             for (int j = 0; j < Win_0_Long.Length; j++)
             {
                 Win_0_Long[j].long_note_col[j].enabled = true;
                 Win_0_Long_Fin[j].fin_col.enabled = true;
 
-                //¸®¼Â
+                //ë¦¬ì…‹
                 //Win_0_Long[j].ResetTouchStatus_0();
                 Win_0_Long[j].ResetTouch_Count_0();
 
@@ -468,17 +460,17 @@ public class Winter_Music : MonoBehaviour
                 Win_0_Long[j].ResetTouch_Count_5();
                 //Win_0_Long[j].ResetTouchStatus();
 
-                Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í2");
+                Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ 2");
             }
 
 
             for (int i = 0; i < Winter_0_Note.Length; i++)
             {
-                Winter_0_Note[i].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_1_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_2_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_3_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_4_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
+                Winter_0_Note[i].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_1_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_2_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_3_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_4_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
             }
 
 
@@ -490,7 +482,7 @@ public class Winter_Music : MonoBehaviour
     //Win_3_Note,
     //Win_4_Note
 };
-            // ¸ğµç ¹è¿­ÀÇ rect.anchoredPositionÀ» Á¶ÀÛ
+            // ëª¨ë“  ë°°ì—´ì˜ rect.anchoredPositionì„ ì¡°ì‘
             foreach (var array in NoteArrays)
             {
                 for (int k = 0; k < array.Length; k++)
@@ -503,27 +495,25 @@ public class Winter_Music : MonoBehaviour
 
             StartCoroutine(Go_Empty());
 
-            //³»·Á¿À´Â ÁßÀÏ °æ¿ì¿¡ 
-            StartCoroutine(Music_Go());
+            //ë‚´ë ¤ì˜¤ëŠ” ì¤‘ì¼ ê²½ìš°ì— 
+            Music_Go();
+            //íƒ€ì´ë¨¸
+            //Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            //Winter_Music_Obj[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ í™œì„±
+            
 
         }
 
 
 
-        IEnumerator Music_Go()
-        {
-            yield return new WaitForSecondsRealtime(11f);//5ÃÊº¸´Ù´Â Å©°í
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Music_Obj[0].SetActive(true);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
-            Winter_Music_Audio[0].Play();
-        }
+        
 
         IEnumerator Go_Empty()
         {
             yield return new WaitForSecondsRealtime(0.7f);
             Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
 
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í5");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ 5");
 
             //Keep_Speed();
 
@@ -537,7 +527,7 @@ public class Winter_Music : MonoBehaviour
             yield return new WaitForSecondsRealtime(1.4f);
 
             Rhythm_Fade.instance.Fade.SetActive(false);
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ ");
 
             //StartCoroutine(Note_Reset());
 
@@ -547,7 +537,14 @@ public class Winter_Music : MonoBehaviour
         }
     }
 
-
+    private void Music_Go()
+    {
+        Win_0_Timer.instance.StartTimer();
+        //yield return new WaitForSecondsRealtime(11.1f);//5ì´ˆë³´ë‹¤ëŠ” í¬ê³ 
+        Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+        Winter_Music_Obj[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ í™œì„±
+        //Winter_Music_Audio[0].Play();
+    }
 
     public void Go_Select_Song()
     {
@@ -559,16 +556,16 @@ public class Winter_Music : MonoBehaviour
         song_select = 1;
         SFX_Manager.instance.SFX_Button();
 
-        //À½¾Ç ¼±ÅÃ ¹öÆ°
+        //ìŒì•… ì„ íƒ ë²„íŠ¼
         Songs = false;
 
-        //À½¾Ç °ü·Ã ¿ÀºêÁ§Æ® ºñÈ°¼º
+        //ìŒì•… ê´€ë ¨ ì˜¤ë¸Œì íŠ¸ ë¹„í™œì„±
         Pause_Text.text = "PAUSE";
 
-        //À½¾Ç ÆÛÁî ½Ã°£ ÃÊ±âÈ­
+        //ìŒì•… í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
 
 
-        //À½¾Ç ¼±ÅÃ¶õÀÌ ÀÖ´Â °÷À¸·Î ÀÌµ¿
+        //ìŒì•… ì„ íƒë€ì´ ìˆëŠ” ê³³ìœ¼ë¡œ ì´ë™
         //Rhythm_Fade.instance.Fade.SetActive(true);
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
 
@@ -578,61 +575,62 @@ public class Winter_Music : MonoBehaviour
         IEnumerator Go_Game()
         {
             yield return new WaitForSeconds(1.0f);//2.25
-            //SceneManager.LoadScene("Title_0930");//¾À ÀÌµ¿
-            //SceneManager.LoadScene("Title_0930");//¾À ÀÌµ¿
-            PlayerPrefs.SetString("NextScene", "Title_0930"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+            manager[0].Result_Panel.SetActive(false);//ê²°ê³¼ì°½ ë³´ì´ì§€ ì•Šë„ë¡
+            //SceneManager.LoadScene("Title_0930");//ì”¬ ì´ë™
+            //SceneManager.LoadScene("Title_0930");//ì”¬ ì´ë™
+            PlayerPrefs.SetString("NextScene", "Title_0930"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
             PlayerPrefs.Save();
 
             Winter_Music_Obj[0].SetActive(false);
 
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Songs[0].SetActive(false);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
+            Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            Winter_Songs[0].SetActive(false);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ ë¹„í™œì„±
 
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-               Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+               Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
             /*select_album.select_Album.SetActive(false);
             select_album.Album[0].SetActive(true);
             Winter_Music.instance.select_album.Select_Song_Btn.SetActive(true);
 
-            //Select_Album.instance.swipe_1.hor.enabled = false;//¾Ù¹üÀ¸·Î µé¾î°¥ ¶§
+            //Select_Album.instance.swipe_1.hor.enabled = false;//ì•¨ë²”ìœ¼ë¡œ ë“¤ì–´ê°ˆ ë•Œ
 
-            //½º¿ÍÀÌÇÁ ´Ù ¸®¼Â
+            //ìŠ¤ì™€ì´í”„ ë‹¤ ë¦¬ì…‹
             Swipe_Win.instance.Reset();
             Swipe_Rev.instance.Reset();
             Swipe_1_fin.instance.Reset();
 
-            // ÇöÀç ¹öÆ° ¹øÈ£¿¡ µû¶ó Album È°¼ºÈ­ ¹× ºñÈ°¼ºÈ­
+            // í˜„ì¬ ë²„íŠ¼ ë²ˆí˜¸ì— ë”°ë¼ Album í™œì„±í™” ë° ë¹„í™œì„±í™”
             for (int i = 0; i < Select_Album.instance.Album.Length; i++)
             {
-                Select_Album.instance.Album[i].SetActive(i == Swipe_1_fin.instance.btnNumber); // btnNumber¿Í °°À¸¸é È°¼ºÈ­, ¾Æ´Ï¸é ºñÈ°¼ºÈ­
+                Select_Album.instance.Album[i].SetActive(i == Swipe_1_fin.instance.btnNumber); // btnNumberì™€ ê°™ìœ¼ë©´ í™œì„±í™”, ì•„ë‹ˆë©´ ë¹„í™œì„±í™”
 
             }*/
-            //SceneManager.LoadScene("Loading_Scene"); // ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            //SceneManager.LoadScene("Loading_Scene"); // ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
 
             /*for (int i = 0; i < UI_Button.instance.Main_False.Length; i++)
             {
-                UI_Button.instance.Main_False[i].SetActive(true);//±âÁ¸ ºñÈ°¼ºÇÑ°Å ´Ù È°¼ºÈ­
+                UI_Button.instance.Main_False[i].SetActive(true);//ê¸°ì¡´ ë¹„í™œì„±í•œê±° ë‹¤ í™œì„±í™”
             }*/
 
         }
 
         IEnumerator Go_Game2()
         {
-            yield return new WaitForSeconds(1.4f);//2.25
+            yield return new WaitForSeconds(1.05f);//1.4
             SceneManager.LoadScene("Loading_Scene");
         }
-            /*Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Songs[0].SetActive(false);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
+            /*Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            Winter_Songs[0].SetActive(false);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ ë¹„í™œì„±
 
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
 
 
@@ -640,24 +638,24 @@ public class Winter_Music : MonoBehaviour
             select_album.select_Album.SetActive(false);
             select_album.Album[0].SetActive(true);
 
-            //Select_Album.instance.swipe_1.hor.enabled = false;//¾Ù¹üÀ¸·Î µé¾î°¥ ¶§
+            //Select_Album.instance.swipe_1.hor.enabled = false;//ì•¨ë²”ìœ¼ë¡œ ë“¤ì–´ê°ˆ ë•Œ
 
-            //½º¿ÍÀÌÇÁ ´Ù ¸®¼Â
+            //ìŠ¤ì™€ì´í”„ ë‹¤ ë¦¬ì…‹
             Swipe_Win.instance.Reset();
             Swipe_Rev.instance.Reset();
             Swipe_1_fin.instance.Reset();
 
-            // ÇöÀç ¹öÆ° ¹øÈ£¿¡ µû¶ó Album È°¼ºÈ­ ¹× ºñÈ°¼ºÈ­
+            // í˜„ì¬ ë²„íŠ¼ ë²ˆí˜¸ì— ë”°ë¼ Album í™œì„±í™” ë° ë¹„í™œì„±í™”
             for (int i = 0; i < Select_Album.instance.Album.Length; i++)
             {
-                Select_Album.instance.Album[i].SetActive(i == Swipe_1_fin.instance.btnNumber); // btnNumber¿Í °°À¸¸é È°¼ºÈ­, ¾Æ´Ï¸é ºñÈ°¼ºÈ­
+                Select_Album.instance.Album[i].SetActive(i == Swipe_1_fin.instance.btnNumber); // btnNumberì™€ ê°™ìœ¼ë©´ í™œì„±í™”, ì•„ë‹ˆë©´ ë¹„í™œì„±í™”
 
             }
 
             Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
             StartCoroutine(SetActive_False());
 
-            // ±âÅ¸ ¹öÆ° ºñÈ°¼ºÈ­
+            // ê¸°íƒ€ ë²„íŠ¼ ë¹„í™œì„±í™”
             Select_Album.instance.Select_Song_Btn.SetActive(true);
             //UI_Button.instance.Piano_Btn.SetActive(false);
         }
@@ -675,20 +673,41 @@ public class Winter_Music : MonoBehaviour
 
     public void Go_Tempo()
     {
-        //¹ÚÀÚ ±³Á¤ ¹öÆ°
+        //ë°•ì êµì • ë²„íŠ¼
         Tempo = true;
+        Correct_beat.instance.shouldResetPosition = true;
+        Correct_beat.instance.Speed_Text.text = Correct_beat.instance.Changed_Speed.ToString("F2");
+        Correct_beat.instance.speed = Correct_beat.instance.Keep_Speed * Correct_beat.instance.Changed_Speed;
+        Correct_beat.instance.Go_First_Posifion();
     }
 
     public void Tempo_True()
     {
-        //¹ÚÀÚ ±³Á¤ ¹öÆ°
+        //ë°•ì êµì • ë²„íŠ¼
+        //Tempo = false;
+
+        Beat_Panel.SetActive(true);
+
+        // ì²« ë²ˆì§¸ ë…¸íŠ¸ ìƒì„±
+
+        
+
+
+    }
+
+    public void Out_Tempo_True()
+    {
+        //í…œí¬ ë§ì¶”ëŠ” ê±°ì—ì„œ ë‚˜ê°€ê¸°
+
+        Correct_beat.instance.shouldResetPosition = false;
+        Beat_Panel.SetActive(false);
         Tempo = false;
     }
 
 
     public void Go_Story()
     {
-        //½ºÅä¸® ¹öÆ°
+        //ìŠ¤í† ë¦¬ ë²„íŠ¼
         Story = true;
     }
 
@@ -699,98 +718,38 @@ public class Winter_Music : MonoBehaviour
 
         Story = false;
 
-        //À½¾Ç °ü·Ã ¿ÀºêÁ§Æ® ºñÈ°¼º
+        //ìŒì•… ê´€ë ¨ ì˜¤ë¸Œì íŠ¸ ë¹„í™œì„±
         Pause_Text.text = "PAUSE";
 
-        //À½¾Ç ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-
-
-        //À½¾Ç ¼±ÅÃ¶õÀÌ ÀÖ´Â °÷À¸·Î ÀÌµ¿
-       // Title_Fade.instance.Fade_Canvas.SetActive(true);
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
 
-        //Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
-
-
-
         StartCoroutine(Go_Game());
-
-
+        StartCoroutine(Go_Game2());
 
         IEnumerator Go_Game()
         {
             yield return new WaitForSeconds(1.0f);//2.25
-            PlayerPrefs.SetString("NextScene", "Title_0930"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+            manager[0].Result_Panel.SetActive(false);//ê²°ê³¼ì°½ ë³´ì´ì§€ ì•Šë„ë¡
+            PlayerPrefs.SetString("NextScene", "Title_0930"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
             PlayerPrefs.Save();
-            SceneManager.LoadScene("Loading_Scene");
 
+            Winter_Music_Obj[0].SetActive(false);
 
-            // ÆÛÁî ¹öÆ°µé ºñÈ°¼º
-            for (int j = 0; j < Winter_Pause_5.Length; j++)
-            {
-                Winter_Pause_5[j].enabled = false;
-            }
-
-            Pause_Text.text = "PAUSE";
-
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Songs[0].SetActive(false);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
+            Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            Winter_Songs[0].SetActive(false);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ ë¹„í™œì„±
 
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
 
-            //½º¿ÍÀÌÇÁ ´Ù ¸®¼Â
-            //Select_Album.instance.win.Reset();
-            //Select_Album.instance.rev.Reset();
-            //Swipe_1_fin.instance.Reset();
-            //½º¿ÍÀÌÇÁ ´Ù ¸®¼Â
-            Swipe_Win.instance.Reset();
-            Swipe_Rev.instance.Reset();
-            Swipe_1_fin.instance.Reset();
-
-
-            //½ºÅä¸® ¹öÆ°
-            /*for (int i = 0; i < UI_Button.instance.Main_False.Length; i++)
-            {
-                UI_Button.instance.Main_False[i].SetActive(true);//ºñÈ°¼ºÈ­ Çß´ø°Å ´Ù È°¼ºÈ­
-            }*/
-
-            //UI_Button.instance.Piano.SetActive(false);
-            //Select_Album.instance.select_Album.SetActive(true);
-
-            song_select_btn.SetActive(true);
-            select_Album.SetActive(true);
-
-            // ±âÅ¸ ¹öÆ° ºñÈ°¼ºÈ­
-            //Select_Album.instance.Select_Song_Btn.SetActive(false);
-            //UI_Button.instance.Piano_Btn.SetActive(false);
-
-            //À©ÅÍ À½¾Çµé °ü·Ã ¿ÀºêÁ§Æ® ÀüºÎ ºñÈ°¼ºÈ­
-            for (int i = 0; i < Winter_Songs.Length; i++)
-            {
-                Winter_Songs[i].SetActive(false);
-            }
-
-            //À©ÅÍ Àç»ıµÇ´Â À½¾Ç ¿ÀºêÁ§Æ® ÀüºÎ ºñÈ°¼ºÈ­
-            for (int i = 0; i < Winter_Music_Obj.Length; i++)
-            {
-                Winter_Music_Obj[i].SetActive(false);
-            }
-
-            Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
-            StartCoroutine(SetActive_False());
         }
 
-        IEnumerator SetActive_False()
+        IEnumerator Go_Game2()
         {
-            yield return new WaitForSeconds(1.4f);
-            //Title_Fade.instance.Fade_Canvas.SetActive(false);
-
-
-            Pause_Text.text = "PAUSE";
+            yield return new WaitForSeconds(1.05f);//1.4
+            SceneManager.LoadScene("Loading_Scene");
         }
     }
 
@@ -800,19 +759,19 @@ public class Winter_Music : MonoBehaviour
         story = 0;
 
         SFX_Manager.instance.SFX_Button();
-        /*PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+        /*PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
         PlayerPrefs.Save();
         SceneManager.LoadScene("Loading_Scene");*/
         //Rhythm_Fade.instance.Fade.SetActive(true);
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
 
 
-        // 1.4ÃÊ ÈÄ¿¡ ·Îµù ¾ÀÀ¸·Î ÀÌµ¿ÇÏ´Â ÄÚ·çÆ¾ ½ÃÀÛ
+        // 1.4ì´ˆ í›„ì— ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™í•˜ëŠ” ì½”ë£¨í‹´ ì‹œì‘
         StartCoroutine(Go_Game());
 
         IEnumerator Go_Game()
         {
-            // 1.4ÃÊ ´ë±â ÈÄ ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            // 1.4ì´ˆ ëŒ€ê¸° í›„ ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
             yield return new WaitForSecondsRealtime(1.0f);
 
             //Select_Album.instance.Select_Song_Btn.SetActive(false);
@@ -820,8 +779,8 @@ public class Winter_Music : MonoBehaviour
             song_select_btn.SetActive(false);
             select_Album.SetActive(false);
 
-            // PlayerPrefs¿¡ "NextScene" °ª ÀúÀå
-            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+            // PlayerPrefsì— "NextScene" ê°’ ì €ì¥
+            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
             PlayerPrefs.Save();
             SceneManager.LoadScene("Loading_Scene");
 
@@ -833,18 +792,18 @@ public class Winter_Music : MonoBehaviour
 
     /*public void Go_W_Music_03()
     {
-        // À½¾Ç ÆÛÁî ½Ã°£ ÃÊ±âÈ­
+        // ìŒì•… í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
 
-        // À½¾Ç ¼±ÅÃ¶õÀÌ ÀÖ´Â °÷À¸·Î ÀÌµ¿
+        // ìŒì•… ì„ íƒë€ì´ ìˆëŠ” ê³³ìœ¼ë¡œ ì´ë™
         Rhythm_Fade.instance.Fade.SetActive(true);
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
 
-        // 1.4ÃÊ ÈÄ¿¡ ·Îµù ¾ÀÀ¸·Î ÀÌµ¿ÇÏ´Â ÄÚ·çÆ¾ ½ÃÀÛ
+        // 1.4ì´ˆ í›„ì— ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™í•˜ëŠ” ì½”ë£¨í‹´ ì‹œì‘
         StartCoroutine(Go_Game());
 
         IEnumerator Go_Game()
         {
-            // 1.4ÃÊ ´ë±â ÈÄ ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            // 1.4ì´ˆ ëŒ€ê¸° í›„ ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
             yield return new WaitForSecondsRealtime(1.4f);
             Select_Album.instance.Piano.SetActive(false);
             Select_Album.instance.Piano_Btn.SetActive(false);
@@ -857,32 +816,32 @@ public class Winter_Music : MonoBehaviour
 
 
 
-            // PlayerPrefs¿¡ "NextScene" °ª ÀúÀå
-            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+            // PlayerPrefsì— "NextScene" ê°’ ì €ì¥
+            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
             PlayerPrefs.Save();
             //SceneManager.LoadScene("Loading_Scene");
-            // ÆäÀÌµå ¾Æ¿ô ÈÄ ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            // í˜ì´ë“œ ì•„ì›ƒ í›„ ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
              StartCoroutine(LoadSceneWithFade());
 
-            // °ÔÀÓ ¼¼ÆÃ ÃÊ±âÈ­ ÄÚµå (·Îµù ¾À¿¡¼­ ½ÇÇàµÊ)
+            // ê²Œì„ ì„¸íŒ… ì´ˆê¸°í™” ì½”ë“œ (ë¡œë”© ì”¬ì—ì„œ ì‹¤í–‰ë¨)
             InitializeGameSettings();
 
-            // ÆäÀÌµå ¾Æ¿ô ÈÄ ½ÇÇàµÉ Ãß°¡ ÀÛ¾÷
+            // í˜ì´ë“œ ì•„ì›ƒ í›„ ì‹¤í–‰ë  ì¶”ê°€ ì‘ì—…
             StartCoroutine(Go_Empty());
             StartCoroutine(Music_Go());
         }
 
-        // ·Îµù ¾ÀÀ» ÆäÀÌµå ÈÄ ·ÎµåÇÏ´Â ÄÚ·çÆ¾
+        // ë¡œë”© ì”¬ì„ í˜ì´ë“œ í›„ ë¡œë“œí•˜ëŠ” ì½”ë£¨í‹´
         IEnumerator LoadSceneWithFade()
         {
-            // ÆäÀÌµå ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³¯ ¶§±îÁö ´ë±â
-            yield return new WaitForSecondsRealtime(1f); // ÆäÀÌµå ¿Ï·á ´ë±â (¾Ö´Ï¸ŞÀÌ¼Ç ±æÀÌ¿¡ ¸ÂÃß±â)
+            // í˜ì´ë“œ ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚  ë•Œê¹Œì§€ ëŒ€ê¸°
+            yield return new WaitForSecondsRealtime(1f); // í˜ì´ë“œ ì™„ë£Œ ëŒ€ê¸° (ì• ë‹ˆë©”ì´ì…˜ ê¸¸ì´ì— ë§ì¶”ê¸°)
 
-            // ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            // ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
             SceneManager.LoadScene("Loading_Scene");
         }
 
-        // °ÔÀÓ ¼³Á¤ ÃÊ±âÈ­ ÄÚµå (·Îµù ¾À¿¡¼­ ½ÇÇà)
+        // ê²Œì„ ì„¤ì • ì´ˆê¸°í™” ì½”ë“œ (ë¡œë”© ì”¬ì—ì„œ ì‹¤í–‰)
         void InitializeGameSettings()
         {
             Winter_Songs[0].SetActive(true);
@@ -893,7 +852,7 @@ public class Winter_Music : MonoBehaviour
             }
             Pause.SetActive(false);
 
-            // Á¡¼ö ÃÊ±âÈ­
+            // ì ìˆ˜ ì´ˆê¸°í™”
             foreach (var m in manager)
             {
                 m.currentScore = 0.0f;
@@ -901,31 +860,31 @@ public class Winter_Music : MonoBehaviour
                 m.Perfect_Hits = 0;
                 m.Miss_Hits = 0;
                 m.Long_Note_Miss = 0;
-                m.ScoreText.text = "0.00%"; // Á¡¼ö ¸®¼Â
+                m.ScoreText.text = "0.00%"; // ì ìˆ˜ ë¦¬ì…‹
             }
 
-            // ·Õ ³ëÆ®¿Í Äİ¶óÀÌ´õ È°¼ºÈ­
+            // ë¡± ë…¸íŠ¸ì™€ ì½œë¼ì´ë” í™œì„±í™”
             for (int j = 0; j < Win_0_Long.Length; j++)
             {
                 Win_0_Long[j].long_note_col[j].enabled = true;
                 Win_0_Long_Fin[j].fin_col.enabled = true;
-                // ¸®¼Â
+                // ë¦¬ì…‹
                 ResetLongNotes(j);
             }
 
-            // Winter_0_Note È°¼ºÈ­
+            // Winter_0_Note í™œì„±í™”
             for (int i = 0; i < Winter_0_Note.Length; i++)
             {
                 Winter_0_Note[i].SetActive(true);
             }
 
-            // ³ëÆ® ¹è¿­ ÃÊ±âÈ­
+            // ë…¸íŠ¸ ë°°ì—´ ì´ˆê¸°í™”
             InitializeNotes();
         }
 
         void ResetLongNotes(int j)
         {
-            // ·Õ ³ëÆ® °ü·Ã ¸®¼Â
+            // ë¡± ë…¸íŠ¸ ê´€ë ¨ ë¦¬ì…‹
             //Win_0_Long[j].ResetTouchStatus_0();
             Win_0_Long[j].ResetTouch_Count_0();
             //Win_0_Long[j].ResetTouchStatus_1();
@@ -934,7 +893,7 @@ public class Winter_Music : MonoBehaviour
             Win_0_Long[j].ResetTouch_Count_3();
             Win_0_Long[j].ResetTouch_Count_4();
             Win_0_Long[j].ResetTouch_Count_5();
-            // °è¼Ó Ãß°¡...
+            // ê³„ì† ì¶”ê°€...
         }
 
         void InitializeNotes()
@@ -945,7 +904,7 @@ public class Winter_Music : MonoBehaviour
             // Win_1_Note, etc.
         };
 
-            // ¸ğµç ¹è¿­ÀÇ rect.anchoredPositionÀ» Á¶ÀÛ
+            // ëª¨ë“  ë°°ì—´ì˜ rect.anchoredPositionì„ ì¡°ì‘
             foreach (var array in NoteArrays)
             {
                 for (int k = 0; k < array.Length; k++)
@@ -957,23 +916,23 @@ public class Winter_Music : MonoBehaviour
             }
         }
 
-        // ÆäÀÌµå ¾Æ¿ô ÈÄ ½ÇÇàµÉ Ãß°¡ ÀÛ¾÷
+        // í˜ì´ë“œ ì•„ì›ƒ í›„ ì‹¤í–‰ë  ì¶”ê°€ ì‘ì—…
         IEnumerator Go_Empty()
         {
             yield return new WaitForSecondsRealtime(0.7f);
             //Rhythm_Fade.instance.Fade.SetActive(true);
             //Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ ");
 
-            // ÇÊ¿ä½Ã Ãß°¡ ÀÛ¾÷ (°ÔÀÓ °ü·Ã ¿ä¼Ò ºñÈ°¼ºÈ­ µî)
+            // í•„ìš”ì‹œ ì¶”ê°€ ì‘ì—… (ê²Œì„ ê´€ë ¨ ìš”ì†Œ ë¹„í™œì„±í™” ë“±)
             StartCoroutine(SetActive_False());
         }
 
         IEnumerator Music_Go()
         {
-            yield return new WaitForSecondsRealtime(11f);//5ÃÊº¸´Ù´Â Å©°í
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-                                           //Winter_Music_Obj[0].SetActive(true);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
+            yield return new WaitForSecondsRealtime(11f);//5ì´ˆë³´ë‹¤ëŠ” í¬ê³ 
+            Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+                                           //Winter_Music_Obj[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ ë¹„í™œì„±
             Winter_Music_Audio[0].Play();
         }
 
@@ -981,9 +940,9 @@ public class Winter_Music : MonoBehaviour
         {
             yield return new WaitForSecondsRealtime(1.4f);
             Rhythm_Fade.instance.Fade.SetActive(false);
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô ¿Ï·á");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ì™„ë£Œ");
 
-            // Ãß°¡ ÀÛ¾÷
+            // ì¶”ê°€ ì‘ì—…
         }
     }
 
@@ -991,15 +950,15 @@ public class Winter_Music : MonoBehaviour
     */
 
 
-    //¾Æ·¡ºÎÅÍ´Â À½¾Ç ÁøÀÔ ÄÚµå °ü·Ã
-    //hopeful Piano°î ¿¬ÁÖÇÏ·¯ °¡´Â ¹öÆ°
+    //ì•„ë˜ë¶€í„°ëŠ” ìŒì•… ì§„ì… ì½”ë“œ ê´€ë ¨
+    //hopeful Pianoê³¡ ì—°ì£¼í•˜ëŸ¬ ê°€ëŠ” ë²„íŠ¼
     public void Go_W_Music_1()
     {
 
-        //À½¾Ç ÆÛÁî ½Ã°£ ÃÊ±âÈ­
+        //ìŒì•… í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
 
 
-        //À½¾Ç ¼±ÅÃ¶õÀÌ ÀÖ´Â °÷À¸·Î ÀÌµ¿
+        //ìŒì•… ì„ íƒë€ì´ ìˆëŠ” ê³³ìœ¼ë¡œ ì´ë™
         Rhythm_Fade.instance.Fade.SetActive(true);
         
         Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Black");
@@ -1010,30 +969,31 @@ public class Winter_Music : MonoBehaviour
         IEnumerator Go_Game()
         {
             yield return new WaitForSecondsRealtime(1.4f);//1.4
-                                                          //´Ù½Ã ½ÃÀÛ ¹öÆ°
+                                                          //ë‹¤ì‹œ ì‹œì‘ ë²„íŠ¼
 
-            // SceneManager.LoadScene("Go_Rhythm");//¾À ÀÌµ¿
-            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ÀÌµ¿ÇÒ ¾ÀÀ» PlayerPrefs¿¡ ÀúÀå
+            // SceneManager.LoadScene("Go_Rhythm");//ì”¬ ì´ë™
+            PlayerPrefs.SetString("NextScene", "Go_Rhythm"); // ì´ë™í•  ì”¬ì„ PlayerPrefsì— ì €ì¥
             PlayerPrefs.Save();
-            SceneManager.LoadScene("LoadingScene"); // ·Îµù ¾ÀÀ¸·Î ÀÌµ¿
+            SceneManager.LoadScene("LoadingScene"); // ë¡œë”© ì”¬ìœ¼ë¡œ ì´ë™
 
             //Load_Control.LoadScene("Go_Rhythm");
-            Win_Note_Pos.instance.Load_AllPositions();
+            //Win_Note_Pos.instance.Load_AllPositions();
             
 
-            //Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            Winter_Songs[0].SetActive(true);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ È°¼º
+            //Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            /*Winter_Songs[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ í™œì„±
 
             for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
+            */
 
-           // Select_Album.instance.winter_song.SetActive(false);//À©ÅÍ À½¾Ç ¼±ÅÃ ºñÈ°¼º
-            //Select_Album.instance.song_select_btn.SetActive(false);//À½¾Ç ¼±ÅÃ ¹öÆ°µé ºñÈ°¼º
+           // Select_Album.instance.winter_song.SetActive(false);//ìœˆí„° ìŒì•… ì„ íƒ ë¹„í™œì„±
+            //Select_Album.instance.song_select_btn.SetActive(false);//ìŒì•… ì„ íƒ ë²„íŠ¼ë“¤ ë¹„í™œì„±
 
-            //¿©±â Ãß°¡
+            //ì—¬ê¸° ì¶”ê°€
             /*for (int i = 0; i < UI_Button.instance.Main_False.Length; i++)
             {
                 UI_Button.instance.Main_False[i].SetActive(false);
@@ -1041,9 +1001,9 @@ public class Winter_Music : MonoBehaviour
 
             /*for (int k = 0; k < Pause_Black.Length; k++)
             {
-                Pause_Black[k].SetActive(false);//ÆÛÁî °ËÁ¤ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+                Pause_Black[k].SetActive(false);//í¼ì¦ˆ ê²€ì •ì´ ë³´ì´ì§€ ì•Šë„ë¡
             }
-            Pause.SetActive(false);//ÆÛÁî ³»¿ë¹°ÀÌ º¸ÀÌÁö ¾Êµµ·Ï
+            Pause.SetActive(false);//í¼ì¦ˆ ë‚´ìš©ë¬¼ì´ ë³´ì´ì§€ ì•Šë„ë¡
             */
             //UI_Button.instance.Piano_Btn.SetActive(false);
 
@@ -1055,7 +1015,7 @@ public class Winter_Music : MonoBehaviour
             */
 
             
-                foreach (var m in manager)
+               /* foreach (var m in manager)
                 {
                     m.currentScore = 0.0f;
                     m.Good_Hits = 0;
@@ -1063,19 +1023,19 @@ public class Winter_Music : MonoBehaviour
                     m.Miss_Hits = 0;
                     m.Long_Note_Miss = 0;
 
-                    m.ScoreText.text = "0.00%";//Á¡¼ö ¸®¼Â
+                    m.ScoreText.text = "0.00%";//ì ìˆ˜ ë¦¬ì…‹
                     m.currentScore = 0;
-                }
+                }*/
             
 
 
-            //·Õ ³ëÆ®¿Í ·Õ ³ëÆ® ³¡ºÎºĞ¿¡ ÀÖ´Â Äİ¶óÀÌ´õ È°¼ºÈ­
-            for (int j = 0; j < Win_0_Long.Length; j++)
+            //ë¡± ë…¸íŠ¸ì™€ ë¡± ë…¸íŠ¸ ëë¶€ë¶„ì— ìˆëŠ” ì½œë¼ì´ë” í™œì„±í™”
+            /*for (int j = 0; j < Win_0_Long.Length; j++)
             {
                 Win_0_Long[j].long_note_col[j].enabled = true;
                 Win_0_Long_Fin[j].fin_col.enabled = true;
 
-                //¸®¼Â
+                //ë¦¬ì…‹
                 //Win_0_Long[j].ResetTouchStatus_0();
                 Win_0_Long[j].ResetTouch_Count_0();
 
@@ -1095,21 +1055,21 @@ public class Winter_Music : MonoBehaviour
                 Win_0_Long[j].ResetTouch_Count_5();
                 //Win_0_Long[j].ResetTouchStatus();
 
-                Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í2");
-            }
+                Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ 2");
+            }*/
 
 
-            for (int i = 0; i < Winter_0_Note.Length; i++)
+            /*for (int i = 0; i < Winter_0_Note.Length; i++)
             {
-                Winter_0_Note[i].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_1_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_2_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_3_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-                                                 //Winter_4_Note[k].SetActive(true);//¹öÆ° ´­¸®µµ·Ï
-            }
+                Winter_0_Note[i].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_1_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_2_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_3_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+                                                 //Winter_4_Note[k].SetActive(true);//ë²„íŠ¼ ëˆŒë¦¬ë„ë¡
+            }*/
 
 
-            var NoteArrays = new List<Note_1105[]>()
+            /*var NoteArrays = new List<Note_1105[]>()
                         {
     Win_0_Note,
     //Win_1_Note,
@@ -1117,7 +1077,7 @@ public class Winter_Music : MonoBehaviour
     //Win_3_Note,
     //Win_4_Note
 };
-            // ¸ğµç ¹è¿­ÀÇ rect.anchoredPositionÀ» Á¶ÀÛ
+            // ëª¨ë“  ë°°ì—´ì˜ rect.anchoredPositionì„ ì¡°ì‘
             foreach (var array in NoteArrays)
             {
                 for (int k = 0; k < array.Length; k++)
@@ -1126,22 +1086,22 @@ public class Winter_Music : MonoBehaviour
                     array[k].gameObject.SetActive(true);
                     array[k].anim_count = 0;
                 }
-            }
+            }*/
 
-            StartCoroutine(Go_Empty());
+            //StartCoroutine(Go_Empty());
 
-            //³»·Á¿À´Â ÁßÀÏ °æ¿ì¿¡ 
-            StartCoroutine(Music_Go());
+            //ë‚´ë ¤ì˜¤ëŠ” ì¤‘ì¼ ê²½ìš°ì— 
+            //StartCoroutine(Music_Go());
 
         }
 
         
 
-        IEnumerator Music_Go()
+        /*IEnumerator Music_Go()
         {
-            yield return new WaitForSecondsRealtime(11f);//5ÃÊº¸´Ù´Â Å©°í
-            Winter_Music_Audio[0].time = 0;//ÆÛÁî ½Ã°£ ÃÊ±âÈ­
-            //Winter_Music_Obj[0].SetActive(true);//À©ÅÍ 0¹øÂ° À½¾Ç ¸®µë°ÔÀÓ ºñÈ°¼º
+            yield return new WaitForSecondsRealtime(11f);//5ì´ˆë³´ë‹¤ëŠ” í¬ê³ 
+            Winter_Music_Audio[0].time = 0;//í¼ì¦ˆ ì‹œê°„ ì´ˆê¸°í™”
+            //Winter_Music_Obj[0].SetActive(true);//ìœˆí„° 0ë²ˆì§¸ ìŒì•… ë¦¬ë“¬ê²Œì„ ë¹„í™œì„±
             Winter_Music_Audio[0].Play();
         }
 
@@ -1150,12 +1110,12 @@ public class Winter_Music : MonoBehaviour
             yield return new WaitForSecondsRealtime(0.7f);
             Rhythm_Fade.instance.Fade_Anim.SetTrigger("Go_Empty");
 
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í5");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ 5");
 
             //Keep_Speed();
 
             //StartCoroutine(SetActive_False());
-        }
+        }*/
 
 
 
@@ -1164,7 +1124,7 @@ public class Winter_Music : MonoBehaviour
             yield return new WaitForSecondsRealtime(1.4f);
 
             //Rhythm_Fade.instance.Fade.SetActive(false);
-            Debug.Log("ÆäÀÌµå ¾Æ¿ô µÇ¶ó°í");
+            Debug.Log("í˜ì´ë“œ ì•„ì›ƒ ë˜ë¼ê³ ");
 
             //StartCoroutine(Note_Reset());
 
