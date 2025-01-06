@@ -50,13 +50,29 @@ public class Typing : MonoBehaviour
     private Coroutine typingCoroutine; // 타이핑 Coroutine 참조
     public bool isTyping = false; // 타이핑 중인지 여부
 
+    //챕터1
+    public GameObject Chapter_1;
+    public GameObject Chapter_1_Pro_Typ;
 
-    
+  
+
+   /* public GameObject Rev;//레브리 도트
+
+    //윈터 카메라
+    public GameObject Winter_Camera;
+
+    //윈터 카메라 아닌 프롤로그 카메라
+    public GameObject Pro_Camera;
+
+    //컨트롤러 및 탐색 버튼
+    public GameObject Controller;
+    public GameObject Serch_Btn;
+   */
 
     public void OnEnable()
     {
         //활성화될 때, 불러오기
-        Load_Sentences_0();
+       // Load_Sentences_0();
     }
 
     public void Start()
@@ -66,46 +82,154 @@ public class Typing : MonoBehaviour
         Dia.SetActive(false);
         Inside_Dia.SetActive(false);
         //불러오기
-        //Load_Sentences_0();
+        Load_Sentences_0();
 
         //처음에 선택지 비홠엉
-        Selection[0].SetActive(false);
+        //Selection[0].SetActive(false);
+
     }
 
-    public void FixedUpdate()
+
+    //챕터1 프롤로그로 넘어가는 코드
+    public void Go_Emp_Wh_Ch_1_Pro()
     {
-        //이름 및 캐릭터, 배경 변경할 때 쓰기위한 코드
-        if(Sentences_0 == 2 || Sentences_0 == 3)
+        Sentences_0 = 141;
+
+        /*for (int i = 0; i < Selection.Length; i++)
         {
-            for(int i =0; i<Name.Length; i++)
-            {
-                Name[i].SetActive(false);
-            }
-            Name[1].SetActive(true);//핸드폰 알림음
+            Selection[i].SetActive(false);
+        }*/
 
-            //배경
+        StartCoroutine(Go_Game());
 
-            Bg[0].SetActive(true);//버스 배경 모음
-            Bg[1].SetActive(true);//눈 감은 주인공
-            for (int i = 2; i < Bg.Length; i++)
-            {
-                Bg[i].SetActive(false);
-            }
-            //Bg[2].SetActive(false);//눈 뜬 주인공
-            //Bg[3].SetActive(false);//버스 정류장
-            //Bg[4].SetActive(false);//슈퍼
+        IEnumerator Go_Game()
+        {
+            yield return new WaitForSecondsRealtime(0.7f);//1.4
+                                                          //다시 시작 버튼
+
+
+
+           
+
+            //Pro_Typing.instance.Delete_Typing_Data();
+
+            
+
+            Chapter_1.SetActive(true);
+            Chapter_1_Pro_Typ.SetActive(true);//대화나 컨트롤러가 나오도록
+
+
+            
+            //Pro_Typing.instance.Save_Sentences_BG();
+
+            //Pro_Typing.instance.Rev.SetActive(true);//레브리 활성
+           // Pro_Typing.instance.Pro_Win.SetActive(true);//프롤로그 윈터 활성
+
+            //Pro_Typing.instance.Open_Eye.SetTrigger("Close_Eye");
+            //Pro_Typing.instance.Disappera_Rev.SetTrigger("Normal");
+
+            /*Pro_Typing.instance.Controller.SetActive(false);//컨트롤러 비활성
+            Pro_Typing.instance.Serch_Btn.SetActive(false);//탐색 버튼 비활성
+            Pro_Typing.instance.OutSide_Map.SetActive(true);//밖 지도 활성
+
+            Pro_Typing.instance.Pro_Camera.SetActive(true);//챕터1 프롤로그 카메라 활성
+            Pro_Typing.instance.Winter_Camera.SetActive(false);//챕터1 윈터 카메라 비활성
+            */
+            //Pro_Typing.instance.Sentences_0 = 0;
+
+            StartCoroutine(Go_Empty0());
+        }
+
+        IEnumerator Go_Empty0()
+        {
+            yield return new WaitForSecondsRealtime(0.2f);//0.0//0.5
+            //Pro_Typing.instance.Sentences_0 = 0;
+            //Pro_Typing.instance.Load_Sentences_0();
+            StartCoroutine(Go_Empty1());
+            StartCoroutine(Go_Empty2());
+
+            Sentences_0 = 142;//없었음
+
+            //현실 지도와 헤드폰 아이콘 비활성
+            UI_Button.instance.Map.SetActive(false);
+            UI_Button.instance.HeadPhone.SetActive(false);
+
 
             for (int i = 0; i < Selection.Length; i++)
             {
-                Selection[i].SetActive(false);//선택지 비활성화
+                Selection[i].SetActive(false);
             }
-            Arrow.SetActive(true);//화살표 활성화
-            btn.enabled = true;//버튼 누를 수 있도록
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);
+            }
+
+
+
+            Dia.SetActive(false);
+            Inside_Dia.SetActive(false);
+
+            Pro_Typing.instance.Dia.SetActive(false);
+        }
+
+        IEnumerator Go_Empty1()
+        {
+            yield return new WaitForSecondsRealtime(0.7f);//0.7
+            Rhythm_Fade.instance.Fade_Anim.SetTrigger("W_Go_Empty");
+            Pro_Typing.instance.Dia.SetActive(false);
+
+           
+
+
+        }
+
+        IEnumerator Go_Empty2()
+        {
+            yield return new WaitForSecondsRealtime(0.2f);//0.0
+
+            Pro_Typing.instance.Dia.SetActive(false);
+            Pro_Typing.instance.Delete_Typing_Data();
+
+            Debug.Log("데이터 지우고 리셋");
+
+        }
+
+    }
+
+
+
+    public void FixedUpdate()
+    {
+
+        if (Typing.instance.Sentences_0 == 140)
+        {
+            Typing.instance.Go_Emp_Wh_Ch_1_Pro();
         }
 
         //주인공 버스 눈 감음
-        if (Sentences_0 == 0 || Sentences_0 == 1 || Sentences_0 == 11 || Sentences_0 == 12)
+        if (Sentences_0 == 0 || Sentences_0 == 1 || Sentences_0 == 10 || Sentences_0 == 11)//Sentences_0 == 11 || Sentences_0 == 12)
         {
+            UI_Button.instance.Map.SetActive(true);//지도와 헤드셋 아이콘 활성
+            UI_Button.instance.HeadPhone.SetActive(true);
+
+
+            //캐릭터 이미지 비활성
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);
+            }
+
             Dream_Manager.instance.dream_y_n = 0;//현재 현실입니당
 
             for (int i = 0; i < Name.Length; i++)
@@ -133,12 +257,46 @@ public class Typing : MonoBehaviour
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
 
-            
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
 
         }
 
+        //이름 및 캐릭터, 배경 변경할 때 쓰기위한 코드
+        else if (Sentences_0 == 2)//Sentences_0 == 2 || Sentences_0 == 3)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[1].SetActive(true);//핸드폰 알림음
+
+            //배경
+
+            Bg[0].SetActive(true);//버스 배경 모음
+            Bg[1].SetActive(true);//눈 감은 주인공
+            for (int i = 2; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            //Bg[2].SetActive(false);//눈 뜬 주인공
+            //Bg[3].SetActive(false);//버스 정류장
+            //Bg[4].SetActive(false);//슈퍼
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+        }
+
+
         //주인공 선택지
-        if (Sentences_0 == 9)
+        else if (Sentences_0 == 8)//Sentences_0 == 9)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -166,7 +324,7 @@ public class Typing : MonoBehaviour
         }
 
         //주인공 버스 눈 뜸
-        if (Sentences_0 == 4 || Sentences_0 == 7 || Sentences_0 == 8)
+        else if (Sentences_0 == 3 || Sentences_0 == 6 || Sentences_0 == 7)//Sentences_0 == 4 || Sentences_0 == 7 || Sentences_0 == 8)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -197,7 +355,7 @@ public class Typing : MonoBehaviour
             Move_Out_Bus.enabled = true;
         }
 
-        if (Sentences_0 == 5 || Sentences_0 == 6 || Sentences_0 == 10)
+        else if (Sentences_0 == 4 || Sentences_0 == 5 || Sentences_0 == 9)//Sentences_0 == 5 || Sentences_0 == 6 || Sentences_0 == 10)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -232,7 +390,7 @@ public class Typing : MonoBehaviour
 
 
         //어떤 음악을 들을까 -> 화살표 및 버튼 비활성
-        if (Sentences_0 == 13)
+        else if (Sentences_0 == 12)//Sentences_0 == 13)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -263,7 +421,7 @@ public class Typing : MonoBehaviour
             Move_Out_Bus.enabled = true;
         }
 
-        if (Sentences_0 == 14)
+        else if (Sentences_0 == 13)//Sentences_0 == 14)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -296,7 +454,7 @@ public class Typing : MonoBehaviour
 
         }
 
-        if (Sentences_0 == 15 || Sentences_0 == 16)
+        else if (Sentences_0 == 14 || Sentences_0 == 15)//Sentences_0 == 15 || Sentences_0 == 16)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -330,7 +488,7 @@ public class Typing : MonoBehaviour
         }
 
         //버스 정류장으로 배경 변경
-        if (Sentences_0 == 17 || Sentences_0 == 18)
+        else if (Sentences_0 == 16 || Sentences_0 == 17)//Sentences_0 == 17 || Sentences_0 == 18)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -359,7 +517,7 @@ public class Typing : MonoBehaviour
         }
 
         //슈퍼로 이동하자 -> 화살표 및 버튼 비활성
-        if (Sentences_0 == 19)
+        else if (Sentences_0 == 18)//Sentences_0 == 19)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -387,7 +545,7 @@ public class Typing : MonoBehaviour
         }
 
         //슈퍼로 이동하고 난 후
-        if (Sentences_0 == 20 || Sentences_0 == 22 )
+        else if (Sentences_0 == 19 || Sentences_0 == 21)//Sentences_0 == 20 || Sentences_0 == 22 )
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -418,7 +576,7 @@ public class Typing : MonoBehaviour
 
         //여기는 구매해야 하는 창이 나와야 하기 때문에
         //말풍선 자체를 비활성화
-        if (Sentences_0 == 21)//말풍선은 나오지 않고 쇼핑만 할 수 있도록
+        else if (Sentences_0 == 20)//Sentences_0 == 21)//말풍선은 나오지 않고 쇼핑만 할 수 있도록
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -455,7 +613,7 @@ public class Typing : MonoBehaviour
 
         //23 -> 이제 집에 돌아가자
         //화살표 및 버튼 비활성
-        if (Sentences_0 == 23)
+        else if (Sentences_0 == 22)//Sentences_0 == 23)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -483,8 +641,9 @@ public class Typing : MonoBehaviour
         }
 
         //24 ~ 28(집으로 배경 변경), 30~32
-        if ((Sentences_0 >= 24 && Sentences_0 <= 28) ||
-            Sentences_0 ==31)
+        else if ((Sentences_0 >= 23 && Sentences_0 <= 27) ||
+            Sentences_0 == 30)//(Sentences_0 >= 24 && Sentences_0 <= 28) ||
+                              //Sentences_0 ==31)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -508,7 +667,7 @@ public class Typing : MonoBehaviour
         }
 
         //29(어머니의 시선)
-        if (Sentences_0 == 29)
+        else if (Sentences_0 == 28)//Sentences_0 == 29)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -534,9 +693,9 @@ public class Typing : MonoBehaviour
 
 
         }
-        
+
         //30
-        if (Sentences_0 ==30)
+        else if (Sentences_0 == 29)//Sentences_0 ==30)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -564,7 +723,7 @@ public class Typing : MonoBehaviour
         }
 
         //32
-        if (Sentences_0 == 32)//
+        else if (Sentences_0 == 31)//Sentences_0 == 32)//
         {
             Dream_Manager.instance.dream_y_n = 0;//현재 현실입니당
 
@@ -595,7 +754,7 @@ public class Typing : MonoBehaviour
         }
 
         //33
-        if (Sentences_0 == 33)//말풍선이 나오지 않게
+        else if (Sentences_0 == 32)//Sentences_0 == 33)//말풍선이 나오지 않게
         {
             Dream_Manager.instance.dream_y_n = 0;//현재 현실입니당
 
@@ -628,7 +787,7 @@ public class Typing : MonoBehaviour
 
         }
 
-        if (Sentences_0 == 34)
+        else if (Sentences_0 == 33)//Sentences_0 == 34)
         {
          
             //이름하고 배경만
@@ -654,7 +813,7 @@ public class Typing : MonoBehaviour
             }
         }
 
-        if (Sentences_0 == 35 || Sentences_0 == 36 || Sentences_0 == 37)
+        else if (Sentences_0 == 34 || Sentences_0 == 35 || Sentences_0 == 36)//Sentences_0 == 35 || Sentences_0 == 36 || Sentences_0 == 37)
         {
           
             for (int i = 0; i < Name.Length; i++)
@@ -665,8 +824,8 @@ public class Typing : MonoBehaviour
 
 
             //말풍선 보이게
-            Dia.SetActive(true);
-            Inside_Dia.SetActive(true);
+            //Dia.SetActive(true);0106
+            //Inside_Dia.SetActive(true);0106
 
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
@@ -690,7 +849,7 @@ public class Typing : MonoBehaviour
         }
 
         //주인공 선택지2
-        if (Sentences_0 == 38)
+        else if (Sentences_0 == 37)//Sentences_0 == 38)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -713,7 +872,7 @@ public class Typing : MonoBehaviour
         }
 
         //선택지 뒤에
-        if (Sentences_0 >= 39 && Sentences_0 <= 42 )
+        else if (Sentences_0 >= 38 && Sentences_0 <= 41)//Sentences_0 >= 39 && Sentences_0 <= 42 )
         {
 
             for (int i = 0; i < Name.Length; i++)
@@ -724,8 +883,8 @@ public class Typing : MonoBehaviour
 
 
             //말풍선 보이게
-            Dia.SetActive(true);
-            Inside_Dia.SetActive(true);
+            //Dia.SetActive(true);0106
+           // Inside_Dia.SetActive(true);0106
 
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
@@ -749,7 +908,7 @@ public class Typing : MonoBehaviour
         }
 
         //주인공 선택지3
-        if (Sentences_0 == 43)
+        else if (Sentences_0 == 42)//Sentences_0 == 43)
         {
             for (int i = 0; i < Name.Length; i++)
             {
@@ -772,7 +931,7 @@ public class Typing : MonoBehaviour
         }
 
         //회색 배경 움직이는 애니메이션
-        if (Sentences_0 == 45 || Sentences_0 == 44)
+        else if ( Sentences_0 == 43 || Sentences_0 == 44)//Sentences_0 == 45 || Sentences_0 == 44)
         {
 
             for (int i = 0; i < Name.Length; i++)
@@ -783,8 +942,8 @@ public class Typing : MonoBehaviour
 
 
             //말풍선 보이게
-            Dia.SetActive(true);
-            Inside_Dia.SetActive(true);
+           // Dia.SetActive(true);0106
+            //Inside_Dia.SetActive(true);0106
 
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
@@ -813,7 +972,7 @@ public class Typing : MonoBehaviour
         }
 
         //46 애니메이션 모두 중지
-        if (Sentences_0 >= 46 && Sentences_0 <= 49)
+        else if (Sentences_0 >= 45 && Sentences_0 <= 48)//Sentences_0 >= 46 && Sentences_0 <= 49)
         {
 
             for (int i = 0; i < Name.Length; i++)
@@ -824,8 +983,8 @@ public class Typing : MonoBehaviour
 
 
             //말풍선 보이게
-            Dia.SetActive(true);
-            Inside_Dia.SetActive(true);
+            //Dia.SetActive(true);0106
+            //Inside_Dia.SetActive(true);0106
 
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
@@ -849,7 +1008,7 @@ public class Typing : MonoBehaviour
         }
 
         //가게 앞
-        if (Sentences_0 >= 50 && Sentences_0 <= 54)
+        else if (Sentences_0 >= 49 && Sentences_0 <= 53)//Sentences_0 >= 50 && Sentences_0 <= 54)
         {
 
             for (int i = 0; i < Name.Length; i++)
@@ -860,8 +1019,8 @@ public class Typing : MonoBehaviour
 
 
             //말풍선 보이게
-            Dia.SetActive(true);
-            Inside_Dia.SetActive(true);
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
 
             Arrow.SetActive(true);//화살표 활성화
             btn.enabled = true;//버튼 누를 수 있도록
@@ -884,6 +1043,732 @@ public class Typing : MonoBehaviour
 
         }
 
+        //가게 내부 - 윈터 - 레브리나 배경 흔들림 없고 화면에 뭐가 뜨지 않았을 때
+        else if ( (Sentences_0 >= 54 && Sentences_0 <= 58) || Sentences_0 == 69 || Sentences_0 == 70
+            || Sentences_0 == 78 || Sentences_0 == 79 || Sentences_0 == 83
+            || (Sentences_0 >= 85 && Sentences_0 <= 87)
+            || (Sentences_0 >= 91 && Sentences_0 <= 94)
+            || (Sentences_0 >= 98 && Sentences_0 <= 100)
+            || Sentences_0 == 104 || Sentences_0 == 105 ||
+            Sentences_0 == 110 || Sentences_0 == 113
+             || Sentences_0 == 115 || Sentences_0 == 116 || Sentences_0 == 119
+             || Sentences_0 == 122 || Sentences_0 == 123
+             || Sentences_0 == 125 || Sentences_0 == 127 || Sentences_0 == 128
+             || Sentences_0 == 132 || Sentences_0 == 133
+             || Sentences_0 == 136 )
+        {
+
+            for (int i = 1; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[0].SetActive(true);//윈터
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+           // Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+        }
+
+        //레브리 없고 뭐 뜨는 거 없고 주인공에 화면 흔들림만 있음
+        else if (Sentences_0 >= 61 && Sentences_0 <= 67)
+        {
+
+            for (int i = 1; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[0].SetActive(true);//윈터
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[11].SetActive(true);//꿈 가게 내부 흔들림
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+        }
+
+        //레브리 있거, 대사도 레브리 뭐 뜨는 거 없고 화면 흔들림 없음
+        if (Sentences_0 == 59 || Sentences_0 == 60 || Sentences_0 == 68 )
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[4].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+           // Dia.SetActive(true);
+           // Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+        }
+
+
+
+        //꿈 가게 내부 - 레브리 디폴트 모습 나타남 + 대사는 윈터
+        else if ((Sentences_0 >= 71 && Sentences_0 <= 74))
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[0].SetActive(true);//윈터
+
+
+            //말풍선 보이게
+           // Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 1; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[0].SetActive(true);
+
+        }
+
+        //꿈 가게 내부 - 레브리 걱정 모습 나타남 + 대사는 레브리 + 레브리 이름 밝히기 전
+        else if (Sentences_0 == 75 || Sentences_0 == 76
+            || Sentences_0 == 81 || Sentences_0 == 88 || Sentences_0 == 96
+            || Sentences_0 == 102 || Sentences_0 == 103 || Sentences_0 == 89
+            || Sentences_0 == 112 || Sentences_0 == 117 || Sentences_0 == 124
+            || Sentences_0 == 126 || Sentences_0 == 129 )
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[4].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 1; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[0].SetActive(true);
+
+        }
+
+        //레브리 이름 밝힌 후 + 레브리 걱정
+        else if (Sentences_0 == 131 || Sentences_0 == 134 || Sentences_0 == 137)
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[5].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 1; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[0].SetActive(true);
+
+        }
+
+        //한쪽 설명 레브리 모습 - 이름 밝히지 전
+        else if (Sentences_0 == 77 || Sentences_0 == 80 || Sentences_0 == 82 || Sentences_0 == 84 || Sentences_0 == 95
+            || Sentences_0 == 101 || Sentences_0 == 111 || Sentences_0 == 118 || Sentences_0 == 120)
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[4].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+           // Dia.SetActive(true);
+           // Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 0; i < 2; i++)
+            {
+                Ch[i].SetActive(false);//선택지 비활성화
+            }
+
+            for (int i = 3; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[2].SetActive(true);
+
+        }
+
+        //한쪽 설명 레브리 모습 + 이름 밝힌 후
+        else if (Sentences_0 == 130 || Sentences_0 == 135)
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[5].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+           // Dia.SetActive(true);
+           // Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 0; i < 2; i++)
+            {
+                Ch[i].SetActive(false);//선택지 비활성화
+            }
+
+            for (int i = 3; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[2].SetActive(true);
+
+        }
+
+        //양쪽 설명 레브리 모습
+        else if ( Sentences_0 == 97 || Sentences_0 == 90 || Sentences_0 == 121)
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[4].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+           // Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 0; i < 1; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+            for (int i = 2; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[1].SetActive(true);
+
+        }
+
+        //양쪽 설명 레브리 모습 + 레브리 이름 밝혀짐
+        else if (Sentences_0 == 131)
+        {
+
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[5].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //레브리 모습 추가
+            for (int i = 0; i < 1; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+            for (int i = 2; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+            Ch[1].SetActive(true);
+
+        }
+
+        //아무것도 없음 -> 페이드 인 아웃 되고 이후에 따뜻한 차 그림 나오게 할 예정
+        else if (Sentences_0 == 106)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+
+            //말풍선 안보이게
+           Dia.SetActive(false);
+            Inside_Dia.SetActive(false);
+
+            Arrow.SetActive(false);//화살표 활성화
+            btn.enabled = false;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+        }
+
+        //따뜻한 차 그림
+        else if (Sentences_0 ==107)
+        {
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[12].SetActive(true);//차 그림
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //캐릭터
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+        }
+
+        //따뜻한 차 그림 + 주인공 이름 + 말풍선
+        else if (Sentences_0 == 108)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[0].SetActive(true);//주인공
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[12].SetActive(true);//차 그림
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //캐릭터 및 그림
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+            // Ch[4].SetActive(true);//편지
+
+        }
+
+        //주인공 선택지4
+        else if (Sentences_0 == 109)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[0].SetActive(true);//주인공
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[12].SetActive(true);//차 잡고 있는 손
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //캐릭터 및 그림
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+        }
+
+        //주인공 선택지5
+        else if (Sentences_0 == 114)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[4].SetActive(true);//레브리
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[10].SetActive(true);//꿈 가게 내부
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+
+
+            //캐릭터 및 그림
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+            Ch[2].SetActive(true);//레브리 한쪽 설명
+        }
+
+        //주인공 선택지6
+        else if (Sentences_0 == 139)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[5].SetActive(true);//레브리
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[13].SetActive(true);//편지
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //캐릭터 및 그림
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+        }
+
+        //편지 이미지만
+        else if (Sentences_0 == 138)
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+            Name[5].SetActive(true);//레브리
+
+
+            //말풍선 보이게
+            //Dia.SetActive(true);
+            //Inside_Dia.SetActive(true);
+
+            Arrow.SetActive(true);//화살표 활성화
+            btn.enabled = true;//버튼 누를 수 있도록
+
+            //배경
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+            Bg[13].SetActive(true);//편지
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);//선택지 비활성화
+            }
+
+            //배경 애니메이션 멈추기
+            Move_Out_Bus.enabled = false;
+            Walk_Street.enabled = false;//걷는 애니메이션 비활성
+
+            //캐릭터 및 그림
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 비활성화
+            }
+
+           // Ch[4].SetActive(true);//편지
+
+        }
+
+
+        //모든 대화가 나 나왔다면
+        else if (Sentences_0 >= 142)//140
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);
+            }
+
+            Dia.SetActive(false);
+            Inside_Dia.SetActive(false);
+
+        }
     }
 
     public void Update()
@@ -893,7 +1778,34 @@ public class Typing : MonoBehaviour
         //C:/Users/minju/AppData/LocalLow/Yabnosem_Company/Melody of Memory
         //->여기임
 
-        Save_Text.text = Application.persistentDataPath.ToString();
+            //Save_Text.text = Application.persistentDataPath.ToString();
+
+        if (Sentences_0 >= 142)//140
+        {
+            for (int i = 0; i < Name.Length; i++)
+            {
+                Name[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Bg.Length; i++)
+            {
+                Bg[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);
+            }
+
+            for (int i = 0; i < Selection.Length; i++)
+            {
+                Selection[i].SetActive(false);
+            }
+
+            Dia.SetActive(false);
+            Inside_Dia.SetActive(false);
+
+        }
     }
 
 
@@ -917,6 +1829,8 @@ public class Typing : MonoBehaviour
         //문장 불러오기
         string path = Application.persistentDataPath + "/Typing.json";
         //Typing.json라는 파일이 존재하는지 확인
+
+        
 
         if (File.Exists(path))
         {
@@ -943,30 +1857,33 @@ public class Typing : MonoBehaviour
                     StartTyping();
                 }
             }*/
+            Debug.Log("있냐?");
 
-                //이 친구가 안됨
-            if (Sentences_0 == 33)
-            {
-                Sentences_0++;
-            }
 
-            if (Sentences_0 > 0 && Sentences_0 != 21 && Sentences_0 != 33 && Sentences_0 != 34)
+
+            if (Sentences_0 > 0 && Sentences_0 != 20 && Sentences_0 != 32 && Sentences_0 != 33
+                && Sentences_0 != 106 && Sentences_0 != 107 && Sentences_0 != 140 && Sentences_0 != 141 && Sentences_0 != 142)//Sentences_0 > 0 && Sentences_0 != 21 && Sentences_0 != 33 && Sentences_0 != 34)
             {
+                //말풍선이 없는 친구들
+
                 StartCoroutine(Wait_First_Sentence());
                 IEnumerator Wait_First_Sentence()
                 {
-                    yield return new WaitForSeconds(1.3f);
+                    yield return new WaitForSeconds(2.5f);//원래1.3
                     Dia.SetActive(true);
                     Inside_Dia.SetActive(true);
-
+                    Arrow.SetActive(true);
                     StartTyping();
-                    if (Sentences_0 == 2)
+
+                    Debug.Log("불러와앙아");
+
+                    if (Sentences_0 == 2)//Sentences_0 == 2)
                     {
                         //효과음이 들리도록
                         SFX_Manager.instance.SFX_Message_Alarm();
                     }
 
-                    if (Sentences_0 == 29)
+                    if (Sentences_0 == 28)//Sentences_0 == 29)
                     {
                         //음악 재생 중지
                         for (int i = 0; i < Change_Music.instance.PlayList_Music.Length; i++)
@@ -975,19 +1892,16 @@ public class Typing : MonoBehaviour
                         }
                     }
 
-                    if (Sentences_0 == 45 || Sentences_0 == 44)
-                    {
-                        Dream_Manager.instance.Loop_SFX[0].SetActive(true);//걷는 효과음
-                    }
 
-                    if(Sentences_0 == 46)
+
+                    if(Sentences_0 == 45)//Sentences_0 == 46)
                     {
                         Dream_Manager.instance.Loop_SFX[0].SetActive(false);//걷는 효과음 나오지 마
                     }
 
 
                     //음악 중간부터 재생되는 문제 해결
-                    if (Sentences_0 >= 31)
+                    if (Sentences_0 >= 30 && Dream_Manager.instance.dream_y_n == 0)//Sentences_0 >= 31)
                     {
                         for(int i = 0; i< Change_Music.instance.PlayList_Music_Audio.Length; i++)
                         {
@@ -996,19 +1910,57 @@ public class Typing : MonoBehaviour
                         }
                     }
 
+                    if (Sentences_0 == 54)//가게 벨 소리
+                    {
+                        //효과음이 들리도록
+                        SFX_Manager.instance.SFX_Memory_Shop_Bell();
+                    }
+
+                    if (Sentences_0 == 62)//레브리 때리는 소리
+                    {
+                        //효과음이 들리도록
+                        SFX_Manager.instance.SFX_Hit_Rev();
+                    }
+
+                    //선택지 때문에
+                    if (Sentences_0 == 114)
+                    {
+                        //캐릭터 및 그림
+                        for (int i = 0; i < Ch.Length; i++)
+                        {
+                            Ch[i].SetActive(false);//캐릭터 비활성화
+                        }
+
+                        Ch[2].SetActive(true);//레브리 한쪽 설명
+
+                    }
+
+                    //선택지 때문에
+                    if (Sentences_0 == 139)
+                    {
+                        //캐릭터 및 그림
+                        for (int i = 0; i < Ch.Length; i++)
+                        {
+                            Ch[i].SetActive(false);//캐릭터 비활성화
+                        }
+                    }
+
                 }
 
                 
             }
 
-            else if(Sentences_0 == 0)
+            
+
+            if (Sentences_0 == 0)
             {
                 StartCoroutine(Wait_First_Sentence());
                 IEnumerator Wait_First_Sentence()
                 {
-                    yield return new WaitForSeconds(3.0f);
+                    yield return new WaitForSeconds(2.5f);
                     Dia.SetActive(true);
                     Inside_Dia.SetActive(true);
+                    Arrow.SetActive(true);
 
                     StartTyping();
                 }
@@ -1024,7 +1976,7 @@ public class Typing : MonoBehaviour
                 }
             }
 
-            else if (Sentences_0 == 21)
+            if (Sentences_0 == 20)//Sentences_0 == 21)
             {
                 Dia.SetActive(false);
                 Inside_Dia.SetActive(false);
@@ -1043,13 +1995,67 @@ public class Typing : MonoBehaviour
 
             }
 
-            if (Sentences_0 == 34)
+            
+            if (Sentences_0 == 32)//원래 말풍선 없고 페이드 인 아웃 있는 부분. 다음 대화창으로 넘어가자
             {
-                Typing_Fade.instance.Sentences_0_34();
+                Sentences_0++;
+            }
+
+            if (Sentences_0 == 33)//Sentences_0 == 34)
+            {
+                Typing_Fade.instance.Sentences_0_33();//Typing_Fade.instance.Sentences_0_34();
 
             }
 
+            if (Sentences_0 == 106)//원래 말풍선 없고 페이드 인 아웃 있는 부분. 다음 대화창으로 넘어가자
+            {
+                Sentences_0++;
+                
+            }
 
+            if (Sentences_0 == 107)
+            {
+                Typing_Fade.instance.Sentences_0_107();
+                SFX_Manager.instance.SFX_Pour_Tea();
+            }
+            
+           if(Sentences_0 >= 142)//141 //140
+            {
+                for (int i = 0; i < Name.Length; i++)
+                {
+                    Name[i].SetActive(false);
+                }
+
+                for (int i = 0; i < Bg.Length; i++)
+                {
+                    Bg[i].SetActive(false);
+                }
+
+                for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);
+                }
+
+                for (int i = 0; i < Selection.Length; i++)
+                {
+                    Selection[i].SetActive(false);
+                }
+
+                Dia.SetActive(false);
+
+
+                Chapter_1.SetActive(true);
+
+                //StartCoroutine(Wait_First_Sentence());
+                //IEnumerator Wait_First_Sentence()
+                //{
+                  //  yield return new WaitForSeconds(1.3f);
+                    Chapter_1_Pro_Typ.SetActive(true);//대화나 컨트롤러가 나오도록
+
+                //}
+
+
+            }
 
         }
          else
@@ -1062,9 +2068,10 @@ public class Typing : MonoBehaviour
                  StartCoroutine(Wait_First_Sentence());
                  IEnumerator Wait_First_Sentence()
                  {
-                     yield return new WaitForSeconds(3.0f);
+                     yield return new WaitForSeconds(2.5f);
                      Dia.SetActive(true);
                      Inside_Dia.SetActive(true);
+                    Arrow.SetActive(true);
 
                      StartTyping();
                  }
@@ -1115,6 +2122,11 @@ public class Typing : MonoBehaviour
             Move_Out_Bus.enabled = true;//배경 애니메이션 움직이기
             Dream_Manager.instance.Loop_SFX[0].SetActive(false);//걷는 효과음 나오지 마
 
+            for (int i = 0; i < Ch.Length; i++)
+            {
+                Ch[i].SetActive(false);//캐릭터 이미지 비활성화
+            }
+
             //음악 중간에 재생되는 문제 해결
             if (Sentences_0 == 0)
             {
@@ -1124,6 +2136,10 @@ public class Typing : MonoBehaviour
                     Change_Music.instance.PlayList_Music_Audio[Change_Music.instance.Music_Count].Play();
                 }
             }
+
+            //챕터1 관련 타이핑 및 전체 비활성
+            Chapter_1.SetActive(false);
+            Chapter_1_Pro_Typ.SetActive(false);
         }
          else
          {
@@ -1136,31 +2152,66 @@ public class Typing : MonoBehaviour
      //타이핑 관련 코드 시작
      public void Next_Text()
      {
-         if (isTyping)
+        Debug.Log("현재 번호는"+ Sentences_0);
+
+
+
+        if (isTyping)
          {
-             //타이핑 중일 때, 타이핑을 완성시킨다.
-             CompleteTyping();
+            Dia.SetActive(true);
+            Inside_Dia.SetActive(true);
+            Arrow.SetActive(true);
+            //타이핑 중일 때, 타이핑을 완성시킨다.
+            CompleteTyping();
          }
          else
          {
+            Dia.SetActive(true);
+            Inside_Dia.SetActive(true);
+           
+
             //타이핑 중이 아닐 때는 다음 문장을 타이핑 시작
-            if (Sentences_0 == 32)
+            if (Sentences_0 == 31)//Sentences_0 == 32)
             {
-                Typing_Fade.instance.Fade_Sentences_0_34();
+                Typing_Fade.instance.Fade_Sentences_0_33();//Typing_Fade.instance.Fade_Sentences_0_34();
                 btn.enabled = false;//버튼 비활성화 10/29
             }
 
-            if (Sentences_0 == 33)
+            if (Sentences_0 == 32)//Sentences_0 == 33)
             {
                 Arrow.SetActive(false);//화살표 비활성화
                 btn.enabled = false;//버튼 누를 수 없도록
             }
 
-            if (Sentences_0 == 41)//첫 번째 선택지의 내용이 다 끝났다면, 공통 문장으로 이어지도록
+            if (Sentences_0 == 40)//Sentences_0 == 41)//첫 번째 선택지의 내용이 다 끝났다면, 공통 문장으로 이어지도록
             {
-                Sentences_0 = 43;
-                StartTyping();
+                Debug.Log("40에서 42나와야 함");
+                Sentences_0 = 41;//43; -> 왜인지는 모르겠으나 이렇게 해야지 오류가 안 생김
+            //    StartTyping();
             }
+
+            //104
+            if (Sentences_0 == 105)
+            {
+                Typing_Fade.instance.Fade_Sentences_0_107();
+                btn.enabled = false;//버튼 비활성화 10/29
+            }
+
+            //105
+            if (Sentences_0 == 106)
+            {
+                Arrow.SetActive(false);//화살표 비활성화
+                btn.enabled = false;//버튼 누를 수 없도록
+            }
+
+            //131
+            if (Sentences_0 == 131)//선택지 끝나고 다음
+            {
+                Sentences_0 = 137;//138
+                Debug.Log("131에서 138나와야 함");
+               // StartTyping();
+            }
+
 
             else
             {
@@ -1197,9 +2248,9 @@ public class Typing : MonoBehaviour
 
             StartTyping();
 
+  
 
-
-            if (Sentences_0 == 21)
+            if (Sentences_0 == 20)//Sentences_0 == 21)
             {
                 Arrow.SetActive(false);//화살표 비활성화
                 btn.enabled = false;//버튼 누를 수 없도록
@@ -1225,18 +2276,57 @@ public class Typing : MonoBehaviour
                 SFX_Manager.instance.SFX_Message_Alarm();
             }
 
-            if (Sentences_0 == 44  || Sentences_0 == 45)
+           /* if (Sentences_0 == 43 || Sentences_0 == 44)//Sentences_0 == 44  || Sentences_0 == 45)
             {
                 //효과음이 들리도록
                 Dream_Manager.instance.Loop_SFX[0].SetActive(true);//걷는 효과음 재생
-            }
+            }*/
 
-            if (Sentences_0 == 46)
+            if (Sentences_0 == 45)//Sentences_0 == 46)
             {
                 Dream_Manager.instance.Loop_SFX[0].SetActive(false);//걷는 효과음 나오지 마
             }
+            if (Sentences_0 == 54)//가게 벨 소리
+            {
+                //효과음이 들리도록
+                SFX_Manager.instance.SFX_Memory_Shop_Bell();
+            }
 
-            
+            if (Sentences_0 == 62)//레브리 때리는 소리
+            {
+                //효과음이 들리도록
+                SFX_Manager.instance.SFX_Hit_Rev();
+            }
+
+            if(Sentences_0 == 107)
+            {
+                //효과음이 들리도록
+                SFX_Manager.instance.SFX_Pour_Tea();
+            }
+
+            //선택지 때문에
+            if (Sentences_0 == 114)
+            {
+                //캐릭터 및 그림
+                for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }
+
+                Ch[2].SetActive(true);//레브리 한쪽 설명
+            }
+
+            //선택지 때문에
+            if (Sentences_0 == 139)
+            {
+                //캐릭터 및 그림
+                for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }
+
+               // Ch[4].SetActive(true);//편지
+            }
 
         }
 
@@ -1251,11 +2341,13 @@ public class Typing : MonoBehaviour
     {
         //타이핑 중인 것을 완료하고 다음 문장으로 이동
         StopCoroutine(typingCoroutine);
-        dialogueText.text = sentences_str_0[Sentences_0];
+        string completedSentence = sentences_str_0[Sentences_0].Replace("\\\\", "\n");
+
+        dialogueText.text = completedSentence;//sentences_str_0[Sentences_0];
         isTyping = false;
 
         //만약 선택지가 나오는 문장일 경우, 선택지가 나오게 한다
-        if(Sentences_0 == 9)
+        if(Sentences_0 == 8)//Sentences_0 == 9)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1268,20 +2360,20 @@ public class Typing : MonoBehaviour
             }
         }
 
-        if (Sentences_0 == 13)
+        if (Sentences_0 == 12)//Sentences_0 == 13)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
         //지도 퀘스트
-        if (Sentences_0 == 19)
+        if (Sentences_0 == 18)//Sentences_0 == 19)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
-        if (Sentences_0 == 21)
+        if (Sentences_0 == 20)//Sentences_0 == 21)
         {
 
             //말풍선 안보이게
@@ -1305,14 +2397,14 @@ public class Typing : MonoBehaviour
         }
 
         //지도 퀘스트
-        if (Sentences_0 == 23)
+        if (Sentences_0 == 22)//Sentences_0 == 23)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
         //만약 선택지가 나오는 문장일 경우, 선택지가 나오게 한다
-        if (Sentences_0 == 38)
+        if (Sentences_0 == 37)//Sentences_0 == 38)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1326,7 +2418,7 @@ public class Typing : MonoBehaviour
         }
 
         //만약 선택지가 나오는 문장일 경우, 선택지가 나오게 한다
-        if (Sentences_0 == 43)
+        if (Sentences_0 == 42)//Sentences_0 == 43)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1336,6 +2428,60 @@ public class Typing : MonoBehaviour
             {
                 yield return new WaitForSeconds(0.5f);
                 Selection[2].SetActive(true);
+            }
+        }
+
+        //프롤로그 선택지4
+        if (Sentences_0 == 109)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[3].SetActive(true);
+            }
+        }
+
+        //프롤로그 선택지 5
+        if (Sentences_0 == 114)//Sentences_0 == 43)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[4].SetActive(true);
+
+                //캐릭터 비활성
+                /*for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }*/
+            }
+        }
+
+        //프롤로그 선택지6
+        if (Sentences_0 == 139)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[5].SetActive(true);
+
+                //캐릭터 비활성
+                for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }
             }
         }
     }
@@ -1353,6 +2499,7 @@ public class Typing : MonoBehaviour
 
         sentence = sentence.Replace("\\\\", "\n");
         //Replace()는 문자열 내에서 특정 문자나 문자열을 다른 문자나 문자열로 교체
+
 
         // 문장을 줄바꿈 문자('\n')를 기준으로 나누어 처리
         string[] lines = sentence.Split('\n');
@@ -1390,7 +2537,7 @@ public class Typing : MonoBehaviour
         isTyping = false; // 타이핑 끝남
 
         //만약 선택지가 나오는 문장일 경우, 선택지가 나오게 한다
-        if (Sentences_0 == 9)
+        if (Sentences_0 == 8)//Sentences_0 == 9)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1403,34 +2550,40 @@ public class Typing : MonoBehaviour
             }
         }
 
-        if (Sentences_0 == 13)
+        if (Sentences_0 == 12)//Sentences_0 == 13)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
         //지도 퀘스트
-        if (Sentences_0 == 19)
+        if (Sentences_0 == 18)//Sentences_0 == 19)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
         //지도 퀘스트
-        if (Sentences_0 == 23)
+        if (Sentences_0 == 22)//Sentences_0 == 23)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
-        if (Sentences_0 == 33)
+        if (Sentences_0 == 32)//Sentences_0 == 33)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+        }
+
+        if (Sentences_0 == 106)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
         }
 
         //만약 선택지2가 나오는 문장일 경우, 선택지가 나오게 한다
-        if (Sentences_0 == 38)
+        if (Sentences_0 == 37)//Sentences_0 == 38)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1444,7 +2597,7 @@ public class Typing : MonoBehaviour
         }
 
         //만약 선택지3가 나오는 문장일 경우, 선택지가 나오게 한다
-        if (Sentences_0 == 43)
+        if (Sentences_0 == 42)//Sentences_0 == 43)
         {
             Arrow.SetActive(false);//화살표 비활성화
             btn.enabled = false;//버튼 누를 수 없도록
@@ -1457,6 +2610,60 @@ public class Typing : MonoBehaviour
             }
         }
 
+        //프롤로그 선택지4
+        if (Sentences_0 == 109)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[3].SetActive(true);
+
+            }
+        }
+
+        //프롤로그 선택지 5
+        if (Sentences_0 == 114)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[4].SetActive(true);
+
+                //캐릭터 및 이미지 비활성
+                /*for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }*/
+            }
+        }
+
+        //프롤로그 선택지6
+        if (Sentences_0 == 139)
+        {
+            Arrow.SetActive(false);//화살표 비활성화
+            btn.enabled = false;//버튼 누를 수 없도록
+
+            StartCoroutine(Show_Select());
+            IEnumerator Show_Select()
+            {
+                yield return new WaitForSeconds(0.5f);
+                Selection[5].SetActive(true);
+
+                //캐릭터 및 이미지 비활성
+               /* for (int i = 0; i < Ch.Length; i++)
+                {
+                    Ch[i].SetActive(false);//캐릭터 비활성화
+                }*/
+            }
+        }
 
     }
 }
